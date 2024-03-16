@@ -13,5 +13,4 @@ public interface ITechnologyEntityMapper {
     TechnologyEntity toEntity(Technology technology);
 
     List<Technology> toModelList(List<TechnologyEntity> technologyEntities);
-
 }

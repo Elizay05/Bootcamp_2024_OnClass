@@ -8,6 +8,7 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITec
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import com.example.bootcamp2024onclass.domain.spi.ITechnologyPersistencePort;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,6 +27,7 @@ public class TechnologyAdapter implements ITechnologyPersistencePort {
         }
         technologyRepository.save(technologyEntityMapper.toEntity(technology));
     }
+    
     @Override
     public List<Technology> getAllTechnologies(Integer page, Integer size, boolean isAscending) {
         Sort sort = isAscending ? Sort.by(Sort.Direction.ASC, "name") : Sort.by(Sort.Direction.DESC, "name");

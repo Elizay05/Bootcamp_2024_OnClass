@@ -32,7 +32,7 @@ public class ControllerAdvisor {
                 Constants.NO_DATA_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND.toString(), LocalDateTime.now()));
     }
     @ExceptionHandler(TechnologyAlreadyExistsException.class)
-    public ResponseEntity<ExceptionResponse> handleProductAlreadyExistsException() {
+    public ResponseEntity<ExceptionResponse> handleTechnologyAlreadyExistsException() {
         return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.TECHNOLOGY_ALREADY_EXISTS_EXCEPTION_MESSAGE,
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
