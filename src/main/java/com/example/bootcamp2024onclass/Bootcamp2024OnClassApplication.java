@@ -1,4 +1,4 @@
-package com.example.Bootcamp_2024_OnClass;
+package com.example.bootcamp2024onclass;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
