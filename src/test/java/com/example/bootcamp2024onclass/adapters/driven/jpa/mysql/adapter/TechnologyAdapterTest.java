@@ -66,6 +66,7 @@ class TechnologyAdapterTest {
         verify(technologyRepository, never()).save(any());
     }
 
+  
     @Test
     void testGetAllTechnologies_Success() {
         Integer page = 0;
@@ -108,7 +109,6 @@ class TechnologyAdapterTest {
         verify(technologyRepository, times(1)).findAll(any(Pageable.class));
         verify(technologyEntityMapper, never()).toModelList(any());
     }
-
 
 
 }

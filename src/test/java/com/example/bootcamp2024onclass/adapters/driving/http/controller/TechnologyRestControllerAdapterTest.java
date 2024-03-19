@@ -1,5 +1,6 @@
 package com.example.bootcamp2024onclass.adapters.driving.http.controller;
 
+
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.reponse.TechnologyResponse;
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTechnologyRequest;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyRequestMapper;
@@ -58,6 +59,7 @@ class TechnologyRestControllerAdapterTest {
         verify(technologyServicePort, times(1)).saveTechnology(expectedTechnology);
     }
 
+
     @Test
     void testGetAllTechnologies_Success() {
         Integer page = 1;
@@ -81,5 +83,6 @@ class TechnologyRestControllerAdapterTest {
         verify(technologyServicePort, times(1)).getAllTechnologies(page, size, isAscending);
         verify(technologyResponseMapper, times(1)).toTechnologyResponseList(technologies);
     }
+
 }
 
