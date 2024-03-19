@@ -23,6 +23,7 @@ public class TechnologyRestControllerAdapter {
     private final ITechnologyRequestMapper technologyRequestMapper;
     private final ITechnologyResponseMapper technologyResponseMapper;
 
+    /*Cambiar el Void(Regresar el ID, LA ESTRUCTURA DE LA CLASE TECHNOLOGY)*/
     @PostMapping("/")
     public ResponseEntity<Void> addTechnology(@Valid @RequestBody AddTechnologyRequest request){
         technologyServicePort.saveTechnology(technologyRequestMapper.addRequestToTechnology(request));
