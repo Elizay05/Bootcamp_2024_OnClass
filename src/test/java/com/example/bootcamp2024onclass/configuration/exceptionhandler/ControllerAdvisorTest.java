@@ -1,6 +1,10 @@
 package com.example.bootcamp2024onclass.configuration.exceptionhandler;
 
 import com.example.bootcamp2024onclass.configuration.Constants;
+import com.example.bootcamp2024onclass.domain.exception.CapacityTechnologiesRepeatException;
+import com.example.bootcamp2024onclass.domain.exception.MaxSizeTechnologiesException;
+import com.example.bootcamp2024onclass.domain.exception.MinSizeTechnologiesException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -107,6 +111,92 @@ class ControllerAdvisorTest {
         assertEquals(errorList.get(0).getMessage(), responseEntity.getBody().get(0).getMessage());
         assertEquals(errorList.get(1).getField(), responseEntity.getBody().get(1).getField());
         assertEquals(errorList.get(1).getMessage(), responseEntity.getBody().get(1).getMessage());
+    }
+
+    @Test
+    @DisplayName("Handle Capacity Already Exists Exception")
+    void testHandleCapacityAlreadyExistsException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        Constants.CAPACITY_ALREADY_EXISTS_EXCEPTION_MESSAGE,
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleCapacityAlreadyExistsException();
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.CAPACITY_ALREADY_EXISTS_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Min Size Technologies Exception")
+    void testHandleMinSizeTechnologiesException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        MinSizeTechnologiesException exception = new MinSizeTechnologiesException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.INVALID_MIN_TECHNOLOGIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleMinSizeTechnologiesException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.INVALID_MIN_TECHNOLOGIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Capacity Technologies Repeat Exception")
+    void testHandleCapacityTechnologiesRepeatException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        CapacityTechnologiesRepeatException exception = new CapacityTechnologiesRepeatException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.CAPACITY_TECHNOLOGIES_REPEAT_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleCapacityTechnologiesRepeatException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.CAPACITY_TECHNOLOGIES_REPEAT_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Max Size Technologies Exception")
+    void testHandleMaxSizeTechnologiesException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        MaxSizeTechnologiesException exception = new MaxSizeTechnologiesException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.INVALID_MAX_TECHNOLOGIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleMaxSizeTechnologiesException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.INVALID_MAX_TECHNOLOGIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
     }
 }
 

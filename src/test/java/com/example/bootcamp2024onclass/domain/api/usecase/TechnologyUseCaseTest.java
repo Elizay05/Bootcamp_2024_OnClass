@@ -47,7 +47,7 @@ class TechnologyUseCaseTest {
         String description = "Hola mundo";
 
         Technology technology = new Technology(id, name, description);
-        doThrow(new RuntimeException("No se pudo guardar la tecnología")).when(technologyPersistencePort).saveTechnology(technology);
+        doThrow(new RuntimeException("Could not save technology")).when(technologyPersistencePort).saveTechnology(technology);
 
         assertThrows(RuntimeException.class, () -> {
             technologyUseCase.saveTechnology(technology);

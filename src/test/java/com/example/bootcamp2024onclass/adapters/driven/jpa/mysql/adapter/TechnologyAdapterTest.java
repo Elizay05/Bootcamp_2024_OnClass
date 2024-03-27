@@ -38,7 +38,6 @@ class TechnologyAdapterTest {
         MockitoAnnotations.openMocks(this);
         technologyAdapter = new TechnologyAdapter(technologyEntityMapper, technologyRepository);
     }
-
     @Test
     void testSaveTechnology_Success() {
         Technology technology = new Technology(1L, "Java", "Java para niños");
