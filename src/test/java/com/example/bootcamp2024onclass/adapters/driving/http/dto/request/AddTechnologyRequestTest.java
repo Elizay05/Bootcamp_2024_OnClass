@@ -13,16 +13,17 @@ class AddTechnologyRequestTest {
     private final Validator validator = validatorFactory.getValidator();
 
     @Test
-    void testAddTechnologyRequestTestBlankNameField() {
-        AddTechnologyRequest request = new AddTechnologyRequest("", "Description");
+    void testAddTechnologyRequestTestBlankFields() {
+        AddTechnologyRequest request = new AddTechnologyRequest("", "");
         var violations = validator.validate(request);
         assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testAddTechnologyRequestTestExceedingMaxLengthNameField() {
+    void testAddTechnologyRequestTestExceedingMaxLengthFields() {
         String name = "ThisNameIsWayTooLongAndExceedsTheMaximumAllowedLengthOfFiftyCharacters";
-        AddTechnologyRequest request = new AddTechnologyRequest(name, "Description");
+        String description = "ThisIsAnExampleTextThatExceedsTheMaximumAllowedLengthOfNinetyCharactersAndIsWayTooLong";
+        AddTechnologyRequest request = new AddTechnologyRequest(name, description);
         var violations = validator.validate(request);
         assertFalse(violations.isEmpty());
     }

@@ -9,16 +9,4 @@ import org.mapstruct.Mapping;
 public interface ICapacityResponseMapper {
     @Mapping(source = "technologies", target = "capacityTechnologyResponses")
     CapacityResponse toCapacityResponse(Capacity capacity);
-    /*
-    @Mapping(target = "id", source = "capacity.id")
-    @Mapping(target = "name", source = "capacity.name")
-    @Mapping(target = "description", source = "capacity.description")
-    @Mapping(target = "capacityTechnologyResponses", source = "capacity.technologies")
-    CapacityResponse toCapacityResponse(Capacity capacity);
-
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    CapacityTechnologyResponse toTechnologyResponse(Technology technology);
-
-     */
 }

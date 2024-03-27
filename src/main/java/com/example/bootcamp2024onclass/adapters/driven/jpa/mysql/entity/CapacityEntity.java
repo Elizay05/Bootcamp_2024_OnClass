@@ -1,12 +1,13 @@
 package com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity;
 
-import com.example.bootcamp2024onclass.domain.model.Technology;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,8 +23,12 @@ public class CapacityEntity {
     @Column(name = "capacity_id")
     private Long id;
 
+    @NotBlank(message = "Name field cannot be empty")
+    @Size(max = 50, message = "Name field exceeds maximum length")
     private String name;
 
+    @NotBlank(message = "Description field cannot be empty")
+    @Size(max = 90, message = "Description field exceeds maximum length")
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER,
@@ -35,5 +40,5 @@ public class CapacityEntity {
             joinColumns = @JoinColumn(name = "capacity_id"),
             inverseJoinColumns = @JoinColumn(name = "technology_id")
     )
-    private Set<TechnologyEntity> technologies;
+    private Set<TechnologyEntity> technologies =  new HashSet<>();
 }

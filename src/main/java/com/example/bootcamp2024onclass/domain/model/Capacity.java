@@ -1,6 +1,16 @@
 package com.example.bootcamp2024onclass.domain.model;
 
-import java.util.*;
+import com.example.bootcamp2024onclass.domain.exception.CapacityTechnologiesRepeatException;
+import com.example.bootcamp2024onclass.domain.exception.MaxSizeTechnologiesException;
+import com.example.bootcamp2024onclass.domain.exception.MinSizeTechnologiesException;
+import com.example.bootcamp2024onclass.domain.util.DomainConstants;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
 
 public class Capacity {
     private final Long id;
@@ -10,17 +20,11 @@ public class Capacity {
 
     public Capacity(Long id, String name, String description, List<Technology> technologies) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.technologies = new ArrayList<Technology>(technologies);
-        validateUniqueTechnologies();
+        this.name = requireNonNull(name, DomainConstants.FIELD_NAME_NULL_MESSAGE);
+        this.description = requireNonNull(description, DomainConstants.FIELD_DESCRIPTION_NULL_MESSAGE);
+        this.technologies = new ArrayList<>(technologies);
+        validateTechnologies();
     }
-    /*
-    public Capacity(Long id, String name, String description, List<Optional<TechnologyEntity>> list) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }*/
 
     public Long getId() {
         return id;
@@ -38,10 +42,18 @@ public class Capacity {
         return new ArrayList<>(technologies);
     }
 
-    private void validateUniqueTechnologies() {
-        Set<Technology> uniqueTechnologies = new HashSet<>(technologies);
-        if (uniqueTechnologies.size() != technologies.size()) {
-            throw new IllegalArgumentException("A capacity cannot have repeated technologies.");
+    private void validateTechnologies() {
+        if (technologies.size() < 3) {
+            throw new MinSizeTechnologiesException();
+        }
+        Set<Long> uniqueTechnologyIds = new HashSet<>();
+        for (Technology technology : technologies) {
+            if (!uniqueTechnologyIds.add(technology.getId())) {
+                throw new CapacityTechnologiesRepeatException();
+            }
+        }
+        if (technologies.size() > 20) {
+            throw new MaxSizeTechnologiesException();
         }
     }
 
