@@ -4,6 +4,8 @@ import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
 
+import java.util.List;
+
 public class CapacityUseCase implements ICapacityServicePort {
 
     private final ICapacityPersistencePort capacityPersistencePort;
@@ -16,4 +18,10 @@ public class CapacityUseCase implements ICapacityServicePort {
     public Capacity saveCapacity(Capacity capacity) {
         return capacityPersistencePort.saveCapacity(capacity);
     }
+
+    @Override
+    public List<Capacity> getAllCapacities(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
+        return capacityPersistencePort.getAllCapacities(page, size, isOrderByName, isAscending);
+    }
 }
+

@@ -10,8 +10,12 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITec
 import com.example.bootcamp2024onclass.domain.model.Capacity;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,6 +40,27 @@ public class CapacityAdapter implements ICapacityPersistencePort {
             }
         }
         capacityEntity = capacityRepository.save(capacityEntity);
-        return capacityEntityMapper.toDomain(capacityEntity);
+        return capacityEntityMapper.toModel(capacityEntity);
+    }
+
+    @Override
+    public List<Capacity> getAllCapacities(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
+        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
+        String field = isOrderByName ? "name" : "id";
+        Sort sort = Sort.by(direction, field);
+        List<CapacityEntity> capacities = capacityRepository.findAll(sort);
+
+        if (!isOrderByName) {
+            capacities.sort(Comparator.comparingInt(capacity -> capacity.getTechnologies().size()));
+            if (!isAscending) {
+                Collections.reverse(capacities);
+            }
+        }
+
+        return capacities.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .map(capacityEntityMapper::toModel)
+                .toList();
     }
 }
