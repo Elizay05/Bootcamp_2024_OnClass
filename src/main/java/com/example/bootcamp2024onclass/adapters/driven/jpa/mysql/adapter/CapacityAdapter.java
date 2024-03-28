@@ -24,7 +24,7 @@ public class CapacityAdapter implements ICapacityPersistencePort {
     @Override
     public Capacity saveCapacity(Capacity capacity) {
         CapacityEntity capacityEntity = capacityEntityMapper.toEntity(capacity);
-        if(capacityRepository.findByName(capacity.getName()).isPresent()){
+        if (capacityRepository.findByName(capacity.getName()).isPresent()) {
             throw new CapacityAlreadyExistsException();
         }
         for (TechnologyEntity technologyEntity : capacityEntity.getTechnologies()) {

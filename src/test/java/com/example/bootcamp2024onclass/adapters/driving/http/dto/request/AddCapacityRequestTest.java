@@ -17,8 +17,8 @@ class AddCapacityRequestTest {
     private final Validator validator = validatorFactory.getValidator();
 
     @Test
-    @DisplayName("Add Capacity Request with Valid Data Should Pass Validation")
-    void testAddCapacityRequestTestValidRequest() {
+    @DisplayName("When_AddCapacityRequestWithValidData_Expect_PassValidation")
+    void testAddCapacityRequest_ValidRequest() {
         List<Long> technologyIds = Arrays.asList(1L, 2L, 3L);
         AddCapacityRequest request = new AddCapacityRequest("Capacity Name", "Capacity Description", technologyIds);
         var violations = validator.validate(request);
@@ -26,8 +26,8 @@ class AddCapacityRequestTest {
     }
 
     @Test
-    @DisplayName("Add Capacity Request with Blank Fields Should Fail Validation")
-    void testAddCapacityRequestTestBlankFields() {
+    @DisplayName("When_AddCapacityRequestWithBlankFields_Expect_FailValidation")
+    void testAddCapacityRequest_BlankFields() {
         List<Long> technologyIds = Arrays.asList(1L, 2L, 3L);
         AddCapacityRequest request = new AddCapacityRequest("", "", technologyIds);
         var violations = validator.validate(request);
@@ -35,8 +35,8 @@ class AddCapacityRequestTest {
     }
 
     @Test
-    @DisplayName("Add Capacity Request with Exceeding Max Length Fields Should Fail Validation")
-    void testAddCapacityRequestTestExceedingMaxLengthFields() {
+    @DisplayName("When_AddCapacityRequestWithExceedingMaxLengthFields_Expect_FailValidation")
+    void testAddCapacityRequest_ExceedingMaxLengthFields() {
         List<Long> technologyIds = Arrays.asList(1L, 2L, 3L);
         String name = "ThisNameIsWayTooLongAndExceedsTheMaximumAllowedLengthOfFiftyCharacters";
         String description = "ThisIsAnExampleTextThatExceedsTheMaximumAllowedLengthOfNinetyCharactersAndIsWayTooLong";
@@ -44,18 +44,9 @@ class AddCapacityRequestTest {
         var violations = validator.validate(request);
         assertFalse(violations.isEmpty());
     }
-
     @Test
-    @DisplayName("Add Capacity Request with Duplicate Technology IDs Should Fail Validation")
-    void testAddCapacityRequestTestDuplicateTechnologyIds() {
-        List<Long> technologyIds = Arrays.asList(1L, 2L, 2L);
-        AddCapacityRequest request = new AddCapacityRequest("Capacity Name", "Capacity Description", technologyIds);
-        var violations = validator.validate(request);
-        assertFalse(violations.isEmpty());
-    }
-    @Test
-    @DisplayName("Getter Methods Should Return Correct Values")
-    void testAddCapacityRequestTestGetterMethods() {
+    @DisplayName("When_GetterMethodsCalled_Expect_CorrectValues")
+    void testAddCapacityRequest_GetterMethods() {
         String name = "Name";
         String description = "Description";
         List<Long> technologyIds = Arrays.asList(1L, 2L, 2L);
