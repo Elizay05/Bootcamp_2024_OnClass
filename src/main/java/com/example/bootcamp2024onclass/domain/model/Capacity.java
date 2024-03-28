@@ -43,7 +43,7 @@ public class Capacity {
     }
 
     private void validateTechnologies() {
-        if (technologies.size() < 3) {
+        if (technologies.size() < DomainConstants.MIN_SIZE_TECHNOLOGIES) {
             throw new MinSizeTechnologiesException();
         }
         Set<Long> uniqueTechnologyIds = new HashSet<>();
@@ -52,7 +52,7 @@ public class Capacity {
                 throw new CapacityTechnologiesRepeatException();
             }
         }
-        if (technologies.size() > 20) {
+        if (technologies.size() > DomainConstants.MAX_SIZE_TECHNOLOGIES) {
             throw new MaxSizeTechnologiesException();
         }
     }

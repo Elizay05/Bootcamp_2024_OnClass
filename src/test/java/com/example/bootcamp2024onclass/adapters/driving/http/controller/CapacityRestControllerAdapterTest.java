@@ -44,14 +44,14 @@ class CapacityRestControllerAdapterTest {
     }
 
     @Test
-    @DisplayName("Add Capacity Should Return Correct Response")
+    @DisplayName("When_AddCapacity_Expect_CorrectResponse")
     void testAddCapacity() {
         List<Long> technologyIds = Arrays.asList(1L, 2L, 3L);
 
         List<Technology> technologies = Arrays.asList(
-                mock(Technology.class),
-                mock(Technology.class),
-                mock(Technology.class)
+                new Technology(1L),
+                new Technology(2L),
+                new Technology(3L)
         );
 
         List<CapacityTechnologyResponse> capacityTechnologyResponses = Arrays.asList(

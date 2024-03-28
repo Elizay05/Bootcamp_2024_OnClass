@@ -24,3 +24,4 @@ public class CapacityUseCase implements ICapacityServicePort {
         return capacityPersistencePort.getAllCapacities(page, size, isOrderByName, isAscending);
     }
 }
+

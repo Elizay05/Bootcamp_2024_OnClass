@@ -30,15 +30,15 @@ class CapacityUseCaseTest {
     }
 
     @Test
-    @DisplayName("Save Capacity Success")
+    @DisplayName("When_SaveCapacity_Expect_Success")
     void testSaveCapacitySuccess() {
         Long id = 1L;
         String name = "Capacity";
         String description = "Description";
         List<Technology> technologies = Arrays.asList(
-                mock(Technology.class),
-                mock(Technology.class),
-                mock(Technology.class)
+                new Technology(1L),
+                new Technology(2L),
+                new Technology(3L)
         );
 
         Capacity capacity = new Capacity(id, name, description, technologies);
@@ -49,15 +49,15 @@ class CapacityUseCaseTest {
     }
 
     @Test
-    @DisplayName("Save Capacity Failed")
+    @DisplayName("When_SaveCapacity_Expect_Failed")
     void testSaveCapacityFailed() {
         Long id = 1L;
         String name = "Capacity";
         String description = "Description";
         List<Technology> technologies = Arrays.asList(
-                mock(Technology.class),
-                mock(Technology.class),
-                mock(Technology.class)
+                new Technology(1L),
+                new Technology(2L),
+                new Technology(3L)
         );
 
         Capacity capacity = new Capacity(id, name, description, technologies);
