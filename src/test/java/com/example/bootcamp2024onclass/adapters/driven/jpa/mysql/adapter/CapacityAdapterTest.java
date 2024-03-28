@@ -3,7 +3,6 @@ package com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.CapacityEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.TechnologyEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.CapacityAlreadyExistsException;
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
@@ -15,10 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -84,7 +81,7 @@ class CapacityAdapterTest {
         verify(capacityRepository, times(1)).findByName("Capacity");
         verify(capacityRepository, never()).save(any());
     }
-
+    
 
     /*
     @Test
@@ -115,4 +112,73 @@ class CapacityAdapterTest {
         //assertEquals("The element indicated does not exis", exception.getMessage());
 
     }*/
+
+    @Test
+    @DisplayName("Test getAllCapacities: Order by name ascending")
+    void testGetAllCapacities_OrderByNameAscending() {
+        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+
+        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+
+        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, true, true);
+
+        List<Capacity> expected = mockedCapacityEntities.stream()
+                .map(capacityEntityMapper::toModel)
+                .sorted(Comparator.comparing(Capacity::getName))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("Test getAllCapacities: Order by name descending")
+    void testGetAllCapacities_OrderByNameDescending() {
+        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+
+        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+
+        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, true, false);
+
+        List<Capacity> expected = mockedCapacityEntities.stream()
+                .map(capacityEntityMapper::toModel)
+                .sorted(Comparator.comparing(Capacity::getName).reversed())
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("Test getAllCapacities: Order by technologies size ascending")
+    void testGetAllCapacities_OrderByTechnologiesSizeAscending() {
+        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+
+        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+
+        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, false, true);
+
+        List<Capacity> expected = mockedCapacityEntities.stream()
+                .map(capacityEntityMapper::toModel)
+                .sorted(Comparator.comparingInt(capacity -> capacity.getTechnologies().size()))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("Test getAllCapacities: Order by technologies size descending")
+    void testGetAllCapacities_OrderByTechnologiesSizeDescending() {
+        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+
+        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+
+        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, false, false);
+
+        List<Capacity> expected = mockedCapacityEntities.stream()
+                .map(capacityEntityMapper::toModel)
+                .sorted((c1, c2) -> Integer.compare(c2.getTechnologies().size(), c1.getTechnologies().size()))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
 }

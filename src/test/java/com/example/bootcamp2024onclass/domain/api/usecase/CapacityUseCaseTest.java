@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -65,5 +66,30 @@ class CapacityUseCaseTest {
         assertThrows(RuntimeException.class, () -> {
             capacityUseCase.saveCapacity(capacity);
         });
+    }
+
+    @Test
+    @DisplayName("Get All Capacities Success")
+    void testGetAllCapacities_Success() {
+        Integer page = 1;
+        Integer size = 10;
+        boolean isOrderByName = true;
+        boolean isAscending = true;
+
+        Technology tech1 = new Technology(1L, "Java", "Programming language");
+        Technology tech2 = new Technology(2L, "Python", "Programming language");
+        Technology tech3 = new Technology(3L, "JavaScript", "Programming language");
+
+        Capacity capacity1 = new Capacity(1L, "Capacity 1", "Description 1", Arrays.asList(tech1, tech2, tech3));
+        Capacity capacity2 = new Capacity(2L, "Capacity 2", "Description 2", Arrays.asList(tech2, tech3, tech1));
+
+        List<Capacity> expectedCapacities = Arrays.asList(capacity1, capacity2);
+
+        when(capacityPersistencePort.getAllCapacities(page, size, isOrderByName, isAscending)).thenReturn(expectedCapacities);
+
+        List<Capacity> actualCapacities = capacityUseCase.getAllCapacities(page, size, isOrderByName, isAscending);
+
+        assertEquals(expectedCapacities, actualCapacities);
+        verify(capacityPersistencePort, times(1)).getAllCapacities(page, size, isOrderByName, isAscending);
     }
 }
