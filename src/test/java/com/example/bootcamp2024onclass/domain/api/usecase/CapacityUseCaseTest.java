@@ -69,7 +69,7 @@ class CapacityUseCaseTest {
     }
 
     @Test
-    @DisplayName("Get All Capacities Success")
+    @DisplayName("When_GetAllCapacities_Expect_SuccessfulRetrieval")
     void testGetAllCapacities_Success() {
         Integer page = 1;
         Integer size = 10;
