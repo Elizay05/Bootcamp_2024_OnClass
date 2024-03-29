@@ -1,9 +1,7 @@
 package com.example.bootcamp2024onclass.configuration.exceptionhandler;
 
 import com.example.bootcamp2024onclass.configuration.Constants;
-import com.example.bootcamp2024onclass.domain.exception.CapacityTechnologiesRepeatException;
-import com.example.bootcamp2024onclass.domain.exception.MaxSizeTechnologiesException;
-import com.example.bootcamp2024onclass.domain.exception.MinSizeTechnologiesException;
+import com.example.bootcamp2024onclass.domain.exception.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -195,6 +193,92 @@ class ControllerAdvisorTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         assertEquals(Constants.INVALID_MAX_TECHNOLOGIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Bootcamp Already Exists Exception")
+    void testHandleBootcampAlreadyExistsException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        Constants.BOOTCAMP_ALREADY_EXISTS_EXCEPTION_MESSAGE,
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleBootcampAlreadyExistsException();
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.BOOTCAMP_ALREADY_EXISTS_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Min Size Capacities Exception")
+    void testHandleMinSizeCapacitiesException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        MinSizeCapacitesException exception = new MinSizeCapacitesException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.INVALID_MIN_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleMinSizeCapacitiesException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.INVALID_MIN_CAPACITIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Bootcamp Capacities Repeat Exception")
+    void testHandleBootcampCapacitiesRepeatException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        BootcampCapacitiesRepeatException exception = new BootcampCapacitiesRepeatException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.BOOTCAMP_CAPACITIES_REPEAT_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleBootcampCapacitiesRepeatException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.BOOTCAMP_CAPACITIES_REPEAT_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle Max Size Capacities Exception")
+    void testHandleMaxSizeCapacitiesException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        MaxSizeCapacitiesException exception = new MaxSizeCapacitiesException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleMaxSizeCapacitiesException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
         assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
         assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
     }

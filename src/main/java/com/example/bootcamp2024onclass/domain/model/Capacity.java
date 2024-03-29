@@ -5,18 +5,17 @@ import com.example.bootcamp2024onclass.domain.exception.MaxSizeTechnologiesExcep
 import com.example.bootcamp2024onclass.domain.exception.MinSizeTechnologiesException;
 import com.example.bootcamp2024onclass.domain.util.DomainConstants;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
 public class Capacity {
-    private final Long id;
-    private final String name;
-    private final String description;
-    private final List<Technology> technologies;
+    public Capacity() {
+    }
+    private Long id;
+    private String name;
+    private String description;
+    private List<Technology> technologies;
 
     public Capacity(Long id, String name, String description, List<Technology> technologies) {
         this.id = id;
@@ -24,6 +23,9 @@ public class Capacity {
         this.description = requireNonNull(description, DomainConstants.FIELD_DESCRIPTION_NULL_MESSAGE);
         this.technologies = new ArrayList<>(technologies);
         validateTechnologies();
+    }
+    public Capacity(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -39,7 +41,26 @@ public class Capacity {
     }
 
     public List<Technology> getTechnologies() {
+        if (technologies == null) {
+            return Collections.emptyList(); // O cualquier otra acción que consideres apropiada
+        }
         return new ArrayList<>(technologies);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTechnologies(List<Technology> technologies) {
+        this.technologies = technologies;
     }
 
     private void validateTechnologies() {
