@@ -10,8 +10,12 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICap
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -38,6 +42,27 @@ public class BootcampAdapter implements IBootcampPersistencePort {
         }
         bootcampEntity = bootcampRepository.save(bootcampEntity);
         return bootcampEntityMapper.toModel(bootcampEntity);
+    }
+
+    @Override
+    public List<Bootcamp> getAllBootcamps(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
+        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
+        String field = isOrderByName ? "name" : "id";
+        Sort sort = Sort.by(direction, field);
+        List<BootcampEntity> bootcamps = bootcampRepository.findAll(sort);
+
+        if (!isOrderByName) {
+            bootcamps.sort(Comparator.comparingInt(bootcamp -> bootcamp.getCapacities().size()));
+            if (!isAscending) {
+                Collections.reverse(bootcamps);
+            }
+        }
+
+        return bootcamps.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .map(bootcampEntityMapper::toModel)
+                .toList();
     }
 
 }
