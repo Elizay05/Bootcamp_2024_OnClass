@@ -1,13 +1,8 @@
 package com.example.bootcamp2024onclass.configuration.exceptionhandler;
 
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.CapacityAlreadyExistsException;
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.NoDataFoundException;
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.TechnologyAlreadyExistsException;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.*;
 import com.example.bootcamp2024onclass.configuration.Constants;
-import com.example.bootcamp2024onclass.domain.exception.CapacityTechnologiesRepeatException;
-import com.example.bootcamp2024onclass.domain.exception.MaxSizeTechnologiesException;
-import com.example.bootcamp2024onclass.domain.exception.MinSizeTechnologiesException;
+import com.example.bootcamp2024onclass.domain.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +63,34 @@ public class ControllerAdvisor {
     public ResponseEntity<ExceptionResponse> handleMaxSizeTechnologiesException(MaxSizeTechnologiesException exception) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(
                 String.format(Constants.INVALID_MAX_TECHNOLOGIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+
+    @ExceptionHandler(BootcampAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleBootcampAlreadyExistsException() {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.BOOTCAMP_ALREADY_EXISTS_EXCEPTION_MESSAGE,
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(MinSizeCapacitesException.class)
+    public ResponseEntity<ExceptionResponse> handleMinSizeCapacitiesException(MinSizeCapacitesException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.INVALID_MIN_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(BootcampCapacitiesRepeatException.class)
+    public ResponseEntity<ExceptionResponse> handleBootcampCapacitiesRepeatException(BootcampCapacitiesRepeatException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.BOOTCAMP_CAPACITIES_REPEAT_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(MaxSizeCapacitiesException.class)
+    public ResponseEntity<ExceptionResponse> handleMaxSizeCapacitiesException(MaxSizeCapacitiesException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
 }
