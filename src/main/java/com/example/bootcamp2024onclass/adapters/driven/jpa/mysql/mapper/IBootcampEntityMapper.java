@@ -5,6 +5,8 @@ import com.example.bootcamp2024onclass.domain.model.Bootcamp;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface IBootcampEntityMapper {
 
@@ -17,5 +19,7 @@ public interface IBootcampEntityMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "capacities", source = "domain.capacities")
     BootcampEntity toEntity(Bootcamp domain);
+
+    List<Bootcamp> toModelList(List<BootcampEntity> bootcampEntities);
 
 }

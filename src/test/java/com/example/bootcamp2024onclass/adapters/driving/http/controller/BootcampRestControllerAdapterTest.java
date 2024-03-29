@@ -8,6 +8,7 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampRes
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.Technology;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,4 +77,42 @@ class BootcampRestControllerAdapterTest {
         verify(bootcampResponseMapper, times(1)).toBootcampResponse(expectedBootcamp);
     }
 
+    @Test
+    @DisplayName("When_GetAllBootcamps_Expect_SuccessfulResponse")
+    void shouldReturnAllBootcampsSuccessfully() {
+        Integer page = 1;
+        Integer size = 10;
+        boolean isOrderByName = true;
+        boolean isAscending = true;
+
+        List<Technology> technologies = Arrays.asList(
+                new Technology(1L),
+                new Technology(2L),
+                new Technology(3L)
+        );
+
+        Capacity capacity1 = new Capacity(1L, "capacity1", "Description 1", technologies);
+        Capacity capacity2 = new Capacity(2L, "capacity2", "Description 2", technologies);
+        Capacity capacity3 = new Capacity(3L, "capacity3", "Description 3", technologies);
+
+        List<Bootcamp> bootcamps = Arrays.asList(
+                new Bootcamp(1L, "Bootcamp 1", "Description 1", Arrays.asList(capacity1, capacity2, capacity3)),
+                new Bootcamp(2L, "Bootcamp 2", "Description 2", Arrays.asList(capacity3, capacity2, capacity1))
+        );
+
+        List<BootcampResponse> expectedResponses = Arrays.asList(
+                new BootcampResponse(1L, "Bootcamp 1", "Description 1", Collections.emptyList()),
+                new BootcampResponse(2L, "Bootcamp 2", "Description 2", Collections.emptyList())
+        );
+
+        when(bootcampServicePort.getAllBootcamps(page, size, isOrderByName, isAscending)).thenReturn(bootcamps);
+        when(bootcampResponseMapper.toBootcampResponseList(bootcamps)).thenReturn(expectedResponses);
+
+        ResponseEntity<List<BootcampResponse>> responseEntity = bootcampRestControllerAdapter.getAllBootcamps(page, size, isOrderByName, isAscending);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResponses, responseEntity.getBody());
+        verify(bootcampServicePort, times(1)).getAllBootcamps(page, size, isOrderByName, isAscending);
+        verify(bootcampResponseMapper, times(1)).toBootcampResponseList(bootcamps);
+    }
 }
