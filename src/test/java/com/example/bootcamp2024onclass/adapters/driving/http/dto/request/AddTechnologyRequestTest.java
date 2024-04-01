@@ -15,6 +15,7 @@ class AddTechnologyRequestTest {
     private final Validator validator = validatorFactory.getValidator();
 
     @Test
+
     @DisplayName("When_AddTechnologyRequestWithBlankFields_Expect_FailValidation")
     void testAddTechnologyRequest_BlankFields() {
         AddTechnologyRequest request = new AddTechnologyRequest("", "");
@@ -23,6 +24,7 @@ class AddTechnologyRequestTest {
     }
 
     @Test
+
     @DisplayName("When_AddTechnologyRequestWithExceedingMaxLengthFields_Expect_FailValidation")
     void testAddTechnologyRequest_ExceedingMaxLengthFields() {
         String name = "ThisNameIsWayTooLongAndExceedsTheMaximumAllowedLengthOfFiftyCharacters";

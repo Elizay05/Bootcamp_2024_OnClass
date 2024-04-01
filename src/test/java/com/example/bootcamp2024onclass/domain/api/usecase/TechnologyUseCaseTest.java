@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -45,11 +50,29 @@ class TechnologyUseCaseTest {
         String description = "Hola mundo";
 
         Technology technology = new Technology(id, name, description);
-        doThrow(new RuntimeException("No se pudo guardar la tecnología")).when(technologyPersistencePort).saveTechnology(technology);
+        doThrow(new RuntimeException("Could not save technology")).when(technologyPersistencePort).saveTechnology(technology);
 
         assertThrows(RuntimeException.class, () -> {
             technologyUseCase.saveTechnology(technology);
         });
+    }
+
+
+    @Test
+    void testGetAllTechnologies_Success() {
+        Integer page = 1;
+        Integer size = 10;
+        Boolean isAscending = true;
+        List<Technology> expectedTechnologies = Arrays.asList(
+                new Technology(1L, "Java", "Programming language"),
+                new Technology(2L, "Python", "Programming language")
+        );
+        when(technologyPersistencePort.getAllTechnologies(page, size, isAscending)).thenReturn(expectedTechnologies);
+
+        List<Technology> actualTechnologies = technologyUseCase.getAllTechnologies(page, size, isAscending);
+
+        assertEquals(expectedTechnologies, actualTechnologies);
+        verify(technologyPersistencePort, times(1)).getAllTechnologies(page, size, isAscending);
     }
 
 }
