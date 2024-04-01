@@ -12,8 +12,8 @@ public class TechnologyUseCase implements ITechnologyServicePort {
         this.technologyPersistencePort = technologyPersistencePort;
     }
     @Override
-    public void saveTechnology(Technology technology) {
-        technologyPersistencePort.saveTechnology(technology);
+    public Technology saveTechnology(Technology technology) {
+        return technologyPersistencePort.saveTechnology(technology);
     }
 
 }

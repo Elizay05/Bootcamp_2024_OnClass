@@ -1,10 +1,12 @@
 package com.example.bootcamp2024onclass.adapters.driving.http.controller;
 
 
+import com.example.bootcamp2024onclass.adapters.driving.http.dto.reponse.TechnologyResponse;
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTechnologyRequest;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyRequestMapper;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.model.Technology;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,12 @@ public class TechnologyRestControllerAdapter {
     private final ITechnologyRequestMapper technologyRequestMapper;
     private final ITechnologyResponseMapper technologyResponseMapper;
 
-    /*Cambiar el Void(Regresar el ID, LA ESTRUCTURA DE LA CLASE TECHNOLOGY)*/
     @PostMapping("/")
-    public ResponseEntity<Void> addTechnology(@Valid @RequestBody AddTechnologyRequest request){
-        technologyServicePort.saveTechnology(technologyRequestMapper.addRequestToTechnology(request));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<TechnologyResponse> addTechnology(@Valid @RequestBody AddTechnologyRequest request){
+        Technology technology = technologyRequestMapper.addRequestToTechnology(request);
+        technology = technologyServicePort.saveTechnology(technology);
+        TechnologyResponse response = technologyResponseMapper.toTechnologyResponse(technology);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }
