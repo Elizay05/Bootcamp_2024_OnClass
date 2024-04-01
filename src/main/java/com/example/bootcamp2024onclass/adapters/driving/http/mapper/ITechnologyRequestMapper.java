@@ -1,7 +1,6 @@
 package com.example.bootcamp2024onclass.adapters.driving.http.mapper;
 
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTechnologyRequest;
-import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.UpdateTechnologyRequest;
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,6 +9,4 @@ import org.mapstruct.Mapping;
 public interface ITechnologyRequestMapper {
     @Mapping(target = "id", ignore = true)
     Technology addRequestToTechnology(AddTechnologyRequest addTechnologyRequest);
-
-    Technology updateRequestToTechnology(UpdateTechnologyRequest updateTechnologyRequest);
 }
