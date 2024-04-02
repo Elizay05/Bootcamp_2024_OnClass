@@ -70,6 +70,7 @@ class BootcampAdapterTest {
         verify(bootcampRepository, times(1)).save(bootcampEntity);
     }
 
+
     @Test
     @DisplayName("Save Bootcamp - Already Exists: Should throw exception when bootcamp already exists")
     void testSaveBootcamp_AlreadyExists() {
