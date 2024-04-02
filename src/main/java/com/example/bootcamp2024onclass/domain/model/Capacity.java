@@ -42,7 +42,7 @@ public class Capacity {
 
     public List<Technology> getTechnologies() {
         if (technologies == null) {
-            return Collections.emptyList(); // O cualquier otra acción que consideres apropiada
+            return Collections.emptyList();
         }
         return new ArrayList<>(technologies);
     }
