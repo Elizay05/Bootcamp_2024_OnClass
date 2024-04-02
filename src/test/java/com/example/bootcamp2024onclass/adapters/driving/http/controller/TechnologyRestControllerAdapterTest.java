@@ -64,7 +64,8 @@ class TechnologyRestControllerAdapterTest {
 
 
     @Test
-    void testGetAllTechnologies_Success() {
+    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulResponse")
+    void shouldReturnAllTechnologiesSuccessfully() {
         Integer page = 1;
         Integer size = 10;
         Boolean isAscending = true;

@@ -59,6 +59,7 @@ class TechnologyUseCaseTest {
 
 
     @Test
+    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulRetrieval")
     void testGetAllTechnologies_Success() {
         Integer page = 1;
         Integer size = 10;
