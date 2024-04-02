@@ -7,6 +7,7 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnol
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,6 +40,7 @@ class TechnologyAdapterTest {
         technologyAdapter = new TechnologyAdapter(technologyEntityMapper, technologyRepository);
     }
     @Test
+    @DisplayName("Save Technology - Success: Should save a new technology")
     void testSaveTechnology_Success() {
         Technology technology = new Technology(1L, "Java", "Java para niños");
         TechnologyEntity technologyEntity = new TechnologyEntity();
@@ -53,6 +55,7 @@ class TechnologyAdapterTest {
     }
 
     @Test
+    @DisplayName("Save Technology - Already Exists: Should throw exception when technology already exists")
     void testSaveTechnology_AlreadyExists() {
         Technology technology = new Technology(2L, "Java", "Java para niños");
         when(technologyRepository.findByName("Java")).thenReturn(Optional.of(new TechnologyEntity()));
@@ -67,6 +70,7 @@ class TechnologyAdapterTest {
 
   
     @Test
+    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulResult")
     void testGetAllTechnologies_Success() {
         Integer page = 0;
         Integer size = 10;
@@ -92,6 +96,7 @@ class TechnologyAdapterTest {
     }
 
     @Test
+    @DisplayName("When_GetAllTechnologies_NoDataFound_Expect_FailedResult")
     void testGetAllTechnologies_NoDataFound() {
         Integer page = 0;
         Integer size = 10;

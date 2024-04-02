@@ -15,11 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -127,4 +126,72 @@ class BootcampAdapterTest {
         //assertEquals("The element indicated does not exis", exception.getMessage());
 
     }*/
+
+    @Test
+    @DisplayName("When_GetAllBootcamps_OrderByNameAscending_Expect_SuccessfulResult")
+    void shouldOrderBootcampsByNameAscending()  {
+        List<BootcampEntity> mockedBootcampEntities = new ArrayList<>();
+
+        when(bootcampRepository.findAll()).thenReturn(mockedBootcampEntities);
+
+        List<Bootcamp> result = bootcampAdapter.getAllBootcamps(0, 10, true, true);
+
+        List<Bootcamp> expected = mockedBootcampEntities.stream()
+                .map(bootcampEntityMapper::toModel)
+                .sorted(Comparator.comparing(Bootcamp::getName))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("When_GetAllBootcamps_OrderByNameDescending_Expect_SuccessfulResult")
+    void shouldOrderBootcampsByNameDescending() {
+        List<BootcampEntity> mockedBootcampEntities = new ArrayList<>();
+
+        when(bootcampRepository.findAll()).thenReturn(mockedBootcampEntities);
+
+        List<Bootcamp> result = bootcampAdapter.getAllBootcamps(0, 10, true, false);
+
+        List<Bootcamp> expected = mockedBootcampEntities.stream()
+                .map(bootcampEntityMapper::toModel)
+                .sorted(Comparator.comparing(Bootcamp::getName).reversed())
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("When_GetAllBootcamps_OrderByCapacitiesSizeAscending_Expect_SuccessfulResult")
+    void shouldOrderBootcampsByCapacitiesSizeAscending() {
+        List<BootcampEntity> mockedBootcampEntities = new ArrayList<>();
+
+        when(bootcampRepository.findAll()).thenReturn(mockedBootcampEntities);
+
+        List<Bootcamp> result = bootcampAdapter.getAllBootcamps(0, 10, false, true);
+
+        List<Bootcamp> expected = mockedBootcampEntities.stream()
+                .map(bootcampEntityMapper::toModel)
+                .sorted(Comparator.comparingInt(bootcamp -> bootcamp.getCapacities().size()))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    @DisplayName("When_GetAllBootcamps_OrderByCapacitiesSizeDescending_Expect_SuccessfulResult")
+    void shouldOrderBootcampsByCapacitiesSizeDescending()  {
+        List<BootcampEntity> mockedBootcampEntities = new ArrayList<>();
+
+        when(bootcampRepository.findAll()).thenReturn(mockedBootcampEntities);
+
+        List<Bootcamp> result = bootcampAdapter.getAllBootcamps(0, 10, false, false);
+
+        List<Bootcamp> expected = mockedBootcampEntities.stream()
+                .map(bootcampEntityMapper::toModel)
+                .sorted((c1, c2) -> Integer.compare(c2.getCapacities().size(), c1.getCapacities().size()))
+                .collect(Collectors.toList());
+
+        assertEquals(expected, result);
+    }
 }

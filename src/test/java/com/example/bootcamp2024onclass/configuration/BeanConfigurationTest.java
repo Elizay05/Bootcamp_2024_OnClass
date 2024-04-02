@@ -1,5 +1,6 @@
 package com.example.bootcamp2024onclass.configuration;
 
+
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.IBootcampEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnologyEntityMapper;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BeanConfigurationTest {
+
     @MockBean
     private ITechnologyRepository technologyRepository;
 
@@ -30,6 +32,7 @@ class BeanConfigurationTest {
 
     @MockBean
     private ICapacityEntityMapper capacityEntityMapper;
+
 
     @MockBean
     private IBootcampRepository bootcampRepository;

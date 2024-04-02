@@ -15,7 +15,7 @@ import java.util.List;
 public interface ICapacityRequestMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "technologies", source = "technologyIds", qualifiedByName = "mapTechnologyIdsToTechnologies")
+    @Mapping(target = "technologies", source = "technologies", qualifiedByName = "mapTechnologyIdsToTechnologies")
     Capacity addRequestToCapacity(AddCapacityRequest addCapacityRequest);
 
     @Named("mapTechnologyIdsToTechnologies")
@@ -23,8 +23,8 @@ public interface ICapacityRequestMapper {
         if (technologyIds == null || technologyIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return technologyIds.stream().map(t -> {
-            return new Technology(t);
-        }).toList();
+        return technologyIds.stream()
+                .map(Technology::new)
+                .toList();
     }
 }
