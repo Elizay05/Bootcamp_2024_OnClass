@@ -1,7 +1,6 @@
 package com.example.bootcamp2024onclass.configuration.exceptionhandler;
 
 import com.example.bootcamp2024onclass.configuration.Constants;
-
 import com.example.bootcamp2024onclass.domain.exception.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

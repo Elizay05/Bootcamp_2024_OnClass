@@ -1,7 +1,6 @@
 package com.example.bootcamp2024onclass.domain.spi;
 
 import com.example.bootcamp2024onclass.domain.model.Technology;
-
 import java.util.List;
 
 public interface ITechnologyPersistencePort {

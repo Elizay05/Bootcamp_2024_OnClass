@@ -70,6 +70,7 @@ class TechnologyAdapterTest {
 
   
     @Test
+    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulResult")
     void testGetAllTechnologies_Success() {
         Integer page = 0;
         Integer size = 10;
@@ -95,6 +96,7 @@ class TechnologyAdapterTest {
     }
 
     @Test
+    @DisplayName("When_GetAllTechnologies_NoDataFound_Expect_FailedResult")
     void testGetAllTechnologies_NoDataFound() {
         Integer page = 0;
         Integer size = 10;

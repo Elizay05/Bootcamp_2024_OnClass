@@ -30,7 +30,7 @@ public class TechnologyAdapter implements ITechnologyPersistencePort {
         technologyEntity = technologyRepository.save(technologyEntity);
         return technologyEntityMapper.toModel(technologyEntity);
     }
-    
+
     @Override
     public List<Technology> getAllTechnologies(Integer page, Integer size, boolean isAscending) {
         Sort sort = isAscending ? Sort.by(Sort.Direction.ASC, "name") : Sort.by(Sort.Direction.DESC, "name");
