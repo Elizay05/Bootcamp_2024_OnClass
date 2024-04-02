@@ -38,8 +38,4 @@ public class TechnologyAdapter implements ITechnologyPersistencePort {
         }
         return technologyEntityMapper.toModelList(technologies);
     }
-
-    public List<Technology> getTechnologiesByIds(List<Long> technologyIds) {
-        return technologyRepository.findAllByIdIn(technologyIds);
-    }
 }

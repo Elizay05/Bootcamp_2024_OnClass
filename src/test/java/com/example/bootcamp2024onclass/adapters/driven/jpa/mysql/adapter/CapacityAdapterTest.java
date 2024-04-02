@@ -3,6 +3,7 @@ package com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.CapacityEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.TechnologyEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.CapacityAlreadyExistsException;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
@@ -48,10 +49,19 @@ class CapacityAdapterTest {
         technologies.add(new Technology(2L, "Python", "Python for beginners"));
         technologies.add(new Technology(3L, "JavaScript", "JavaScript basics"));
 
-        Capacity capacity = new Capacity(1L, "Capacity", "Description", technologies);
+        // Crear una nueva instancia de CapacityEntity y configurar la lista de TechnologyEntity
         CapacityEntity capacityEntity = new CapacityEntity();
-        when(capacityRepository.findByName("Capacity")).thenReturn(Optional.empty());
+        Set<TechnologyEntity> technologyEntities = new HashSet<>();
+        technologyEntities.add(new TechnologyEntity(1L, "Java", "Java para niños"));
+        technologyEntities.add(new TechnologyEntity(2L, "Python", "Python for beginners"));
+        technologyEntities.add(new TechnologyEntity(3L, "JavaScript", "JavaScript basics"));
+        capacityEntity.setTechnologies(technologyEntities);
+
+        Capacity capacity = new Capacity(1L, "Capacity", "Description", technologies);
+
+        // Configurar el mock de capacityEntityMapper para devolver la instancia de CapacityEntity configurada
         when(capacityEntityMapper.toEntity(capacity)).thenReturn(capacityEntity);
+        when(capacityRepository.findByName("Capacity")).thenReturn(Optional.empty());
         when(technologyRepository.findById(anyLong())).thenReturn(Optional.of(new TechnologyEntity()));
 
         capacityAdapter.saveCapacity(capacity);
@@ -81,23 +91,36 @@ class CapacityAdapterTest {
         verify(capacityRepository, times(1)).findByName("Capacity");
         verify(capacityRepository, never()).save(any());
     }
-    
+
 
     /*
     @Test
+    @DisplayName("Save Capacity - Technology Not Found: Should throw exception when technology is not found")
     void testSaveCapacity_TechnologyNotFound() {
-        Technology technology1 = new Technology(1L, "Java", "Java for beginners");
+        // Configurar las tecnologías con las IDs correctas
+        Technology technology1 = new Technology(1L, "Java", "Java para niños");
         Technology technology2 = new Technology(2L, "Python", "Python for beginners");
         Technology technology3 = new Technology(3L, "JavaScript", "JavaScript basics");
 
+        // Crear una lista de tecnologías
         List<Technology> technologies = Arrays.asList(technology1, technology2, technology3);
 
-        Capacity capacity = new Capacity(3L, "Capacity", "Description", technologies);
+        // Crear una instancia de Capacity con las tecnologías
+        Capacity capacity = new Capacity(1L, "Capacity", "Description", technologies);
 
-        // Configuración del mock para que devuelva un Optional vacío al llamar findById con el id 1L
-        when(technologyRepository.findById(1L)).thenReturn(Optional.empty());
+        // Configurar el mock de capacityEntityMapper para devolver la instancia de CapacityEntity configurada
+        CapacityEntity capacityEntity = new CapacityEntity();
+        Set<TechnologyEntity> technologyEntities = new HashSet<>();
+        technologyEntities.add(new TechnologyEntity(1L, "Java", "Java para niños"));
+        technologyEntities.add(new TechnologyEntity(2L, "Python", "Python for beginners"));
+        technologyEntities.add(new TechnologyEntity(3L, "JavaScript", "JavaScript basics"));
+        capacityEntity.setTechnologies(technologyEntities);
 
-        // Verificar que al intentar guardar la capacidad con una tecnología no encontrada, se lance la excepción ElementNotFoundException
+        when(capacityEntityMapper.toEntity(capacity)).thenReturn(capacityEntity);
+        when(capacityRepository.findByName("Capacity")).thenReturn(Optional.empty());
+        when(technologyRepository.findById(1L)).thenReturn(Optional.empty()); // Corregido el ID aquí
+
+        // Verificar que se lance la excepción ElementNotFoundException
         ElementNotFoundException exception = assertThrows(ElementNotFoundException.class, () -> {
             capacityAdapter.saveCapacity(capacity);
         });
@@ -107,9 +130,6 @@ class CapacityAdapterTest {
 
         // Verificar que no se llamó al método save del capacityRepository
         verify(capacityRepository, never()).save(any());
-
-        // Opcionalmente, también podrías verificar el mensaje de la excepción si proporciona más información útil
-        //assertEquals("The element indicated does not exis", exception.getMessage());
 
     }*/
 

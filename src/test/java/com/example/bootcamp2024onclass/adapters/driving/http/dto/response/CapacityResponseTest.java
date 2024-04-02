@@ -29,6 +29,6 @@ class CapacityResponseTest {
         assertThat(capacityResponse.getId()).isEqualTo(expectedId);
         assertThat(capacityResponse.getName()).isEqualTo(expectedName);
         assertThat(capacityResponse.getDescription()).isEqualTo(expectedDescription);
-        assertThat(capacityResponse.getCapacityTechnologyResponses()).isEqualTo(expectedTechnologyResponses);
+        assertThat(capacityResponse.getTechnologies()).isEqualTo(expectedTechnologyResponses);
     }
 }

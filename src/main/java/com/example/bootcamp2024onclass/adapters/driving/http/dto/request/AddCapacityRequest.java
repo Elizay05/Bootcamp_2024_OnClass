@@ -18,5 +18,5 @@ public class AddCapacityRequest {
     @Size(max = 90, message = "Description field exceeds maximum length")
     private final String description;
 
-    private final List<Long> technologyIds;
+    private final List<Long> technologies;
 }

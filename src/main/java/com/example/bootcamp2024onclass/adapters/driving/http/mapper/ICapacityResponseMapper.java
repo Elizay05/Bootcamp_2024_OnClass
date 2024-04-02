@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ICapacityResponseMapper {
-    @Mapping(source = "technologies", target = "capacityTechnologyResponses")
+    @Mapping(source = "technologies", target = "technologies")
     CapacityResponse toCapacityResponse(Capacity capacity);
 
     List<CapacityResponse> toCapacityResponseList(List<Capacity> capacities);
