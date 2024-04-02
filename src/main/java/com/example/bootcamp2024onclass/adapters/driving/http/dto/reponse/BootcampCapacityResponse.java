@@ -1,14 +1,14 @@
 package com.example.bootcamp2024onclass.adapters.driving.http.dto.reponse;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+
+import java.util.List;
 
 @AllArgsConstructor
-@Getter
-public class TechnologyResponse {
+@Data
+public class BootcampCapacityResponse {
     private final Long id;
-
     private final String name;
-
-    private final String description;
+    private final List<CapacityTechnologyResponse> technologies;
 }

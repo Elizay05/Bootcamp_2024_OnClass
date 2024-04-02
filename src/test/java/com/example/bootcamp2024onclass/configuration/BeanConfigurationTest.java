@@ -1,5 +1,6 @@
 package com.example.bootcamp2024onclass.configuration;
 
+
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnologyEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;

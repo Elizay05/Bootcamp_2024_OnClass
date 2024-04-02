@@ -134,8 +134,8 @@ class CapacityAdapterTest {
     }*/
 
     @Test
-    @DisplayName("Test getAllCapacities: Order by name ascending")
-    void testGetAllCapacities_OrderByNameAscending() {
+    @DisplayName("When_GetAllCapacities_OrderByNameAscending_Expect_SuccessfulResult")
+    void shouldOrderCapacitiesByNameAscending()  {
         List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
 
         when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
@@ -151,8 +151,8 @@ class CapacityAdapterTest {
     }
 
     @Test
-    @DisplayName("Test getAllCapacities: Order by name descending")
-    void testGetAllCapacities_OrderByNameDescending() {
+    @DisplayName("When_GetAllCapacities_OrderByNameDescending_Expect_SuccessfulResult")
+    void shouldOrderCapacitiesByNameDescending() {
         List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
 
         when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
@@ -168,8 +168,8 @@ class CapacityAdapterTest {
     }
 
     @Test
-    @DisplayName("Test getAllCapacities: Order by technologies size ascending")
-    void testGetAllCapacities_OrderByTechnologiesSizeAscending() {
+    @DisplayName("When_GetAllCapacities_OrderByTechnologiesSizeAscending_Expect_SuccessfulResult")
+    void shouldOrderCapacitiesByTechnologiesSizeAscending() {
         List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
 
         when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
@@ -185,8 +185,8 @@ class CapacityAdapterTest {
     }
 
     @Test
-    @DisplayName("Test getAllCapacities: Order by technologies size descending")
-    void testGetAllCapacities_OrderByTechnologiesSizeDescending() {
+    @DisplayName("When_GetAllCapacities_OrderByTechnologiesSizeDescending_Expect_SuccessfulResult")
+    void shouldOrderCapacitiesByTechnologiesSizeDescending()  {
         List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
 
         when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);

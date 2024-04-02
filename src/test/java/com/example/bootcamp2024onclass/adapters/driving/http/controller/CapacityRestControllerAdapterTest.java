@@ -77,7 +77,7 @@ class CapacityRestControllerAdapterTest {
     }
 
     @Test
-    @DisplayName("Should Return All Capacities Successfully")
+    @DisplayName("When_GetAllCapacities_Expect_SuccessfulResponse")
     void shouldReturnAllCapacitiesSuccessfully() {
         Integer page = 1;
         Integer size = 10;

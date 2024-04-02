@@ -3,6 +3,7 @@ package com.example.bootcamp2024onclass.domain.api.usecase;
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import com.example.bootcamp2024onclass.domain.spi.ITechnologyPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,6 +29,7 @@ class TechnologyUseCaseTest {
     }
 
     @Test
+    @DisplayName("When_SaveTechnology_Expect_Success")
     void testSaveTechnologySuccess() {
         Long id = 2L;
         String name = "Java";
@@ -41,6 +43,7 @@ class TechnologyUseCaseTest {
     }
 
     @Test
+    @DisplayName("When_SaveTechnology_Expect_Failed")
     void testSaveTechnologyFailed() {
         Long id = 2L;
         String name = "";
@@ -56,6 +59,7 @@ class TechnologyUseCaseTest {
 
 
     @Test
+    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulRetrieval")
     void testGetAllTechnologies_Success() {
         Integer page = 1;
         Integer size = 10;
