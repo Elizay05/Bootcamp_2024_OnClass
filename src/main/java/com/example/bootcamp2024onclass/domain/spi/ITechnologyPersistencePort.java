@@ -5,5 +5,8 @@ import java.util.List;
 
 public interface ITechnologyPersistencePort {
     Technology saveTechnology(Technology technology);
+
     List<Technology> getAllTechnologies(Integer page, Integer size, boolean isAscending);
+
+    List<Technology> getTechnologiesByIds(List<Long> technologyIds);
 }

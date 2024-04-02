@@ -1,6 +1,7 @@
 package com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter;
 
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.TechnologyEntity;
+
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.NoDataFoundException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.TechnologyAlreadyExistsException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnologyEntityMapper;
@@ -39,5 +40,9 @@ public class TechnologyAdapter implements ITechnologyPersistencePort {
             throw new NoDataFoundException();
         }
         return technologyEntityMapper.toModelList(technologies);
+    }
+
+    public List<Technology> getTechnologiesByIds(List<Long> technologyIds) {
+        return technologyRepository.findAllByIdIn(technologyIds);
     }
 }
