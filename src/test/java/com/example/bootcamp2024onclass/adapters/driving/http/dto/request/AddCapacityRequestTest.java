@@ -53,7 +53,7 @@ class AddCapacityRequestTest {
         AddCapacityRequest request = new AddCapacityRequest(name, description, technologyIds);
         assertEquals(name, request.getName());
         assertEquals(description, request.getDescription());
-        assertEquals(technologyIds, request.getTechnologyIds());
+        assertEquals(technologyIds, request.getTechnologies());
     }
 
 }
