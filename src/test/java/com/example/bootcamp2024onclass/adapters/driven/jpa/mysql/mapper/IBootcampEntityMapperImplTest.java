@@ -22,6 +22,7 @@ class IBootcampEntityMapperImplTest {
 
     private final IBootcampEntityMapperImpl mapper = new IBootcampEntityMapperImpl();
 
+    @Test
     @DisplayName("When_BootcampEntityConvertedToBootcampModel_Expect_SuccessfulConversion")
     void testToModel() {
         Long bootcampId = 1L;
@@ -74,7 +75,7 @@ class IBootcampEntityMapperImplTest {
         assertEquals(capacities.size(), bootcampEntity.getCapacities().size());
     }
   
-  @Test
+    @Test
     @DisplayName("When_BootcampEntityListIsNotEmpty_Expect_ListOfBootcampsReturned")
     void testToModelList() {
         Set<TechnologyEntity> technologyEntities = new HashSet<>();
@@ -102,5 +103,5 @@ class IBootcampEntityMapperImplTest {
             assertEquals(bootcampEntity.getName(), mappedBootcamp.getName());
             assertEquals(bootcampEntity.getDescription(), mappedBootcamp.getDescription());
         }
-
+    }
 }
