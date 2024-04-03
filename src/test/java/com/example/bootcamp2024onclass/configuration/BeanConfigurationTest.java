@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BeanConfigurationTest {
+
     @MockBean
     private ITechnologyRepository technologyRepository;
 

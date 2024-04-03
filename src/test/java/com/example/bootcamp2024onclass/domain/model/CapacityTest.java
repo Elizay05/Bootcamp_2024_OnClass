@@ -7,12 +7,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CapacityTest {
+
+    @Test
+    @DisplayName("When_CapacityConstructorWithId_Expect_Success")
+    void capacityConstructor_WithId_Success() {
+        Long id = 1L;
+        Capacity capacity = new Capacity(id);
+        assertNotNull(capacity);
+        assertEquals(id, capacity.getId());
+        assertNull(capacity.getName());
+        assertNull(capacity.getDescription());
+    }
 
     @Test
     @DisplayName("When_GetId_Expect_Success")
@@ -63,6 +73,37 @@ class CapacityTest {
         );
         Capacity capacity = new Capacity(1L, "Capacity", "Description", expectedTechnologies);
         assertEquals(expectedTechnologies, capacity.getTechnologies());
+    }
+
+    @Test
+    @DisplayName("When_SetName_Expect_Success")
+    void setName_ValidName_Success() {
+        Capacity capacity = new Capacity();
+        String name = "Java";
+        capacity.setName(name);
+        assertEquals(name, capacity.getName());
+    }
+
+    @Test
+    @DisplayName("When_SetDescription_Expect_Success")
+    void setDescription_ValidDescription_Success() {
+        Capacity capacity = new Capacity();
+        String description = "Java programming language";
+        capacity.setDescription(description);
+        assertEquals(description, capacity.getDescription());
+    }
+
+    @Test
+    @DisplayName("When_SetTechnologies_Expect_Success")
+    void setTechnologies_ValidDescription_Success() {
+        Capacity capacity = new Capacity();
+        List<Technology> technologies = Arrays.asList(
+                new Technology(1L),
+                new Technology(2L),
+                new Technology(3L)
+        );
+        capacity.setTechnologies(technologies);
+        assertEquals(technologies, capacity.getTechnologies());
     }
 
     @Test
