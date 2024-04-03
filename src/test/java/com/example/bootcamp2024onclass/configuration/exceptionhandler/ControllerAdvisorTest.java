@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 class ControllerAdvisorTest {
 
     @Test
+    @DisplayName("Handle No Data Found Exception")
     void testHandleNoDataFoundException() {
         ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
 
@@ -38,6 +39,7 @@ class ControllerAdvisorTest {
     }
 
     @Test
+    @DisplayName("Handle Technology Already Exists Exception")
     void testHandleTechnologyAlreadyExistsException() {
 
         ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
@@ -57,6 +59,7 @@ class ControllerAdvisorTest {
     }
 
     @Test
+    @DisplayName("Handle Element Not Found Exception")
     void testHandleElementNotFoundException() {
 
         ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
@@ -77,6 +80,7 @@ class ControllerAdvisorTest {
 
 
     @Test
+    @DisplayName("Handle Argument Invalid Exception")
     void testHandleArgumentInvalidException() {
 
         ControllerAdvisor controllerAdvisor = new ControllerAdvisor();

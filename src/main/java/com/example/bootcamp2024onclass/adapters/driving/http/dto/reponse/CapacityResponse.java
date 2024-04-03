@@ -14,5 +14,5 @@ public class CapacityResponse {
 
     private final String description;
 
-    private final List<CapacityTechnologyResponse> capacityTechnologyResponses;
+    private final List<CapacityTechnologyResponse> technologies;
 }
