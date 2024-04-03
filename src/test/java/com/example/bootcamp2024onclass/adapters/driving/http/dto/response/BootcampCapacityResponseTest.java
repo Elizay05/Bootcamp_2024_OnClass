@@ -29,6 +29,7 @@ class BootcampCapacityResponseTest {
         assertNotNull(capacityResponse);
         assertEquals(id, capacityResponse.getId());
         assertEquals(name, capacityResponse.getName());
+        assertEquals(technologies, capacityResponse.getTechnologies());
     }
 
     @Test
