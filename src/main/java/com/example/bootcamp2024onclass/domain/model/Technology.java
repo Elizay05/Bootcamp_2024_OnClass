@@ -19,7 +19,6 @@ public class Technology {
         this.name = requireNonNull(name, DomainConstants.FIELD_NAME_NULL_MESSAGE);
         this.description = requireNonNull(description, DomainConstants.FIELD_DESCRIPTION_NULL_MESSAGE);
     }
-
     public Technology(Long id) {
         this.id = id;
     }

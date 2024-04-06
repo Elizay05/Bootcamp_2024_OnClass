@@ -66,6 +66,11 @@ public class ControllerAdvisor {
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
 
+    @ExceptionHandler(DateVersionBootcampAlreadyUseException.class)
+    public ResponseEntity<ExceptionResponse> handleDateVersionBootcampAlreadyUseException() {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.DATE_VERSIONBOOTCAMP_ALREADY_USE_EXCEPTION_MESSAGE,
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
 
     @ExceptionHandler(BootcampAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleBootcampAlreadyExistsException() {
@@ -91,6 +96,20 @@ public class ControllerAdvisor {
     public ResponseEntity<ExceptionResponse> handleMaxSizeCapacitiesException(MaxSizeCapacitiesException exception) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(
                 String.format(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(StartDateBeforeCurrentDateException.class)
+    public ResponseEntity<ExceptionResponse> handleStartDateBeforeCurrentDateException(StartDateBeforeCurrentDateException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.STARTDATE_BEFORE_CURRENTDATE_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(StartDateAfterEndDateException.class)
+    public ResponseEntity<ExceptionResponse> handleStartDateAfterEndDateException(StartDateAfterEndDateException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.STARTDATE_AFTER_ENDDATE_EXCEPTION_MESSAGE, exception.getMessage()),
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
 }

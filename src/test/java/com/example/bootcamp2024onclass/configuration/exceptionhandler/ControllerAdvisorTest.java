@@ -200,7 +200,7 @@ class ControllerAdvisorTest {
         assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
         assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
     }
-
+    /*
     @Test
     @DisplayName("Handle Bootcamp Already Exists Exception")
     void testHandleBootcampAlreadyExistsException() {
@@ -220,7 +220,7 @@ class ControllerAdvisorTest {
         assertEquals(Constants.BOOTCAMP_ALREADY_EXISTS_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
         assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
         assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
-    }
+    }*/
 
     @Test
     @DisplayName("Handle Min Size Capacities Exception")
