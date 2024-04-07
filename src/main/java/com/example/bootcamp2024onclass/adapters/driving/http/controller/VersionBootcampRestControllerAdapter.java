@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/versionBootcamp")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class VersionBootcampRestControllerAdapter {
     private final IVersionBootcampResponseMapper versionBootcampResponseMapper;
 
     @PostMapping("/")
-    public ResponseEntity<VersionBootcampResponse> addVersionBootcamp(@RequestBody AddVersionBootcampRequest request) {
+    public ResponseEntity<VersionBootcampResponse> addVersionBootcamp(@Valid @RequestBody AddVersionBootcampRequest request) {
         VersionBootcamp versionBootcamp = versionBootcampRequestMapper.addRequestToVersionBootcamp(request);
         versionBootcamp = versionBootcampServicePort.saveVersionBootcamp(versionBootcamp);
         VersionBootcampResponse response = versionBootcampResponseMapper.toVersionBootcampResponse(versionBootcamp);

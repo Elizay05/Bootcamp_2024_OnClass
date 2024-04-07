@@ -17,13 +17,11 @@ class ICapacityRequestMapperImplTest {
     @Test
     @DisplayName("When_AddCapacityRequestMappedToCapacity_Expect_SuccessfulMapping")
     void testAddRequestToCapacity() {
-        // Datos de prueba
         List<Long> technologyIds = Arrays.asList(1L, 2L, 3L);
         String name = "Capacity Name";
         String description = "Capacity Description";
         AddCapacityRequest validRequest = new AddCapacityRequest(name, description, technologyIds);
 
-        // Mapeo y verificación
         Capacity mappedCapacity = mapper.addRequestToCapacity(validRequest);
         assertNotNull(mappedCapacity);
         assertNull(mappedCapacity.getId());
@@ -31,7 +29,6 @@ class ICapacityRequestMapperImplTest {
         assertEquals(description, mappedCapacity.getDescription());
         assertEquals(technologyIds.size(), mappedCapacity.getTechnologies().size());
 
-        // Verificación cuando la solicitud es nula
         Capacity nullMappedCapacity = mapper.addRequestToCapacity(null);
         assertNull(nullMappedCapacity);
     }

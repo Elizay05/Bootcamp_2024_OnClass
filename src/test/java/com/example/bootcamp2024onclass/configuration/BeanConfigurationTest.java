@@ -11,9 +11,11 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IVer
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.api.IVersionBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
 import com.example.bootcamp2024onclass.domain.spi.ITechnologyPersistencePort;
+import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -70,5 +72,11 @@ class BeanConfigurationTest {
 
         IBootcampServicePort bootcampServicePort = beanConfiguration.bootcampServicePort();
         assertNotNull(bootcampServicePort);
+
+        IVersionBootcampPersistencePort versionBootcampPersistencePort = beanConfiguration.versionBootcampPersistencePort();
+        assertNotNull(versionBootcampPersistencePort);
+
+        IVersionBootcampServicePort versionBootcampServicePort = beanConfiguration.versionBootcampServicePort();
+        assertNotNull(versionBootcampServicePort);
     }
 }

@@ -66,12 +66,6 @@ public class ControllerAdvisor {
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
 
-    @ExceptionHandler(DateVersionBootcampAlreadyUseException.class)
-    public ResponseEntity<ExceptionResponse> handleDateVersionBootcampAlreadyUseException() {
-        return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.DATE_VERSIONBOOTCAMP_ALREADY_USE_EXCEPTION_MESSAGE,
-                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
-    }
-
     @ExceptionHandler(BootcampAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleBootcampAlreadyExistsException() {
         return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.BOOTCAMP_ALREADY_EXISTS_EXCEPTION_MESSAGE,
@@ -96,6 +90,11 @@ public class ControllerAdvisor {
     public ResponseEntity<ExceptionResponse> handleMaxSizeCapacitiesException(MaxSizeCapacitiesException exception) {
         return ResponseEntity.badRequest().body(new ExceptionResponse(
                 String.format(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
+    }
+    @ExceptionHandler(DateVersionBootcampAlreadyUseException.class)
+    public ResponseEntity<ExceptionResponse> handleDateVersionBootcampAlreadyUseException() {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(Constants.DATE_VERSIONBOOTCAMP_ALREADY_USE_EXCEPTION_MESSAGE,
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
 

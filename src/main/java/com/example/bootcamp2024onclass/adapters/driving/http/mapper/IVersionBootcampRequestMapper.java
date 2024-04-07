@@ -5,9 +5,9 @@ import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-    @Mapper(componentModel = "spring")
-    public interface IVersionBootcampRequestMapper {
+@Mapper(componentModel = "spring")
+public interface IVersionBootcampRequestMapper {
 
-        @Mapping(target = "id", ignore = true)
-        VersionBootcamp addRequestToVersionBootcamp(AddVersionBootcampRequest addVersionBootcampRequest);
-    }
+    @Mapping(target = "id", ignore = true)
+    VersionBootcamp addRequestToVersionBootcamp(AddVersionBootcampRequest addVersionBootcampRequest);
+}
