@@ -30,7 +30,7 @@ public class BootcampAdapter implements IBootcampPersistencePort {
     public Bootcamp saveBootcamp(Bootcamp bootcamp) {
         BootcampEntity bootcampEntity = bootcampEntityMapper.toEntity(bootcamp);
         if (bootcampRepository.findByName(bootcamp.getName()).isPresent()) {
-            throw new BootcampAlreadyExistsException();
+            throw new BootcampAlreadyExistsException("Bootcamp");
         }
         for (CapacityEntity capacityEntity : bootcampEntity.getCapacities()) {
             Optional<CapacityEntity> capacityEntityOptional = capacityRepository.findById(capacityEntity.getId());

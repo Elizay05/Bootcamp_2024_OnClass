@@ -200,7 +200,6 @@ class ControllerAdvisorTest {
         assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
         assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
     }
-
     @Test
     @DisplayName("Handle Bootcamp Already Exists Exception")
     void testHandleBootcampAlreadyExistsException() {
@@ -283,6 +282,71 @@ class ControllerAdvisorTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
         assertEquals(Constants.INVALID_MAX_CAPACITIES_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle DateVersionBootcamp Already Use Exception")
+    void testHandleDateVersionBootcampAlreadyUseException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        Constants.DATE_VERSIONBOOTCAMP_ALREADY_USE_EXCEPTION_MESSAGE,
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleDateVersionBootcampAlreadyUseException();
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.DATE_VERSIONBOOTCAMP_ALREADY_USE_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle StartDate Before CurrentDate Exception")
+    void testHandleStartDateBeforeCurrentDateException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        StartDateBeforeCurrentDateException exception = new StartDateBeforeCurrentDateException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.STARTDATE_BEFORE_CURRENTDATE_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleStartDateBeforeCurrentDateException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.STARTDATE_BEFORE_CURRENTDATE_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
+        assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
+    }
+
+    @Test
+    @DisplayName("Handle StartDate After EndDate Exception")
+    void testhandleStartDateAfterEndDateException() {
+        ControllerAdvisor controllerAdvisor = new ControllerAdvisor();
+        StartDateAfterEndDateException exception = new StartDateAfterEndDateException();
+        ResponseEntity<ExceptionResponse> expectedResponse = new ResponseEntity<>(
+                new ExceptionResponse(
+                        String.format(Constants.STARTDATE_AFTER_ENDDATE_EXCEPTION_MESSAGE, exception.getMessage()),
+                        HttpStatus.BAD_REQUEST.toString(),
+                        LocalDateTime.now()
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+
+        ResponseEntity<ExceptionResponse> responseEntity = controllerAdvisor.handleStartDateAfterEndDateException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(Constants.STARTDATE_AFTER_ENDDATE_EXCEPTION_MESSAGE, responseEntity.getBody().getMessage());
         assertEquals(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getStatus());
         assertEquals(LocalDateTime.now().getDayOfYear(), responseEntity.getBody().getTimestamp().getDayOfYear());
     }

@@ -3,21 +3,27 @@ package com.example.bootcamp2024onclass.configuration;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter.BootcampAdapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter.CapacityAdapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter.TechnologyAdapter;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter.VersionBootcampAdapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.IBootcampEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnologyEntityMapper;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.IVersionBootcampEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IBootcampRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IVersionBootcampRepository;
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.api.IVersionBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.api.usecase.BootcampUseCase;
 import com.example.bootcamp2024onclass.domain.api.usecase.CapacityUseCase;
 import com.example.bootcamp2024onclass.domain.api.usecase.TechnologyUseCase;
+import com.example.bootcamp2024onclass.domain.api.usecase.VersionBootcampUseCase;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
 import com.example.bootcamp2024onclass.domain.spi.ITechnologyPersistencePort;
+import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +37,8 @@ public class BeanConfiguration {
     private final ICapacityEntityMapper capacityEntityMapper;
     private final IBootcampRepository bootcampRepository;
     private final IBootcampEntityMapper bootcampEntityMapper;
+    private final IVersionBootcampRepository versionBootcampRepository;
+    private final IVersionBootcampEntityMapper versionBootcampEntityMapper;
 
     @Bean
     public ITechnologyPersistencePort technologyPersistencePort() {
@@ -55,10 +63,19 @@ public class BeanConfiguration {
     public IBootcampPersistencePort bootcampPersistencePort() {
         return new BootcampAdapter(bootcampRepository, bootcampEntityMapper, capacityRepository);
     }
-
     @Bean
     public IBootcampServicePort bootcampServicePort() {
         return new BootcampUseCase(bootcampPersistencePort());
     }
+    @Bean
+    public IVersionBootcampPersistencePort versionBootcampPersistencePort() {
+        return new VersionBootcampAdapter(versionBootcampRepository, versionBootcampEntityMapper, bootcampRepository);
+    }
+    @Bean
+    public IVersionBootcampServicePort versionBootcampServicePort() {
+        return new VersionBootcampUseCase(versionBootcampPersistencePort());
+    }
+
+
 }
 

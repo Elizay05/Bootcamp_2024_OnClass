@@ -18,14 +18,12 @@ class ICapacityResponseMapperImplTest {
     @Test
     @DisplayName("When_CapacityConvertedToCapacityResponse_Expect_SuccessfulConversion")
     void testToCapacityResponse() {
-        // Datos de prueba
         List<Technology> technologies = new ArrayList<>();
         technologies.add(new Technology(1L, "Java", "Programming language"));
         technologies.add(new Technology(2L, "Python", "High-level programming language"));
         technologies.add(new Technology(3L, "JavaScript", "High-level programming language"));
         Capacity capacity = new Capacity(1L, "Capacity Name", "Capacity Description", technologies);
 
-        // Mapeo y verificación
         CapacityResponse mappedResponse = mapper.toCapacityResponse(capacity);
         assertNotNull(mappedResponse);
         assertEquals(capacity.getId(), mappedResponse.getId());
@@ -33,7 +31,6 @@ class ICapacityResponseMapperImplTest {
         assertEquals(capacity.getDescription(), mappedResponse.getDescription());
         assertEquals(technologies.size(), mappedResponse.getTechnologies().size());
 
-        // Verificación cuando la capacidad es nula
         CapacityResponse nullMappedResponse = mapper.toCapacityResponse(null);
         assertNull(nullMappedResponse);
     }
@@ -41,7 +38,6 @@ class ICapacityResponseMapperImplTest {
     @Test
     @DisplayName("When_CapacityListConvertedToCapacityResponseList_Expect_SuccessfulConversion")
     void testToCapacityResponseList() {
-        // Datos de prueba
         List<Capacity> capacities = new ArrayList<>();
 
         List<Technology> technologies1 = new ArrayList<>();
@@ -65,7 +61,6 @@ class ICapacityResponseMapperImplTest {
         capacities.add(new Capacity(3L, "Capacity Name 3", "Capacity Description 23", technologies3));
 
 
-        // Mapeo y verificación
         List<CapacityResponse> mappedResponseList = mapper.toCapacityResponseList(capacities);
         assertNotNull(mappedResponseList);
         assertEquals(capacities.size(), mappedResponseList.size());
@@ -78,7 +73,6 @@ class ICapacityResponseMapperImplTest {
             assertEquals(capacity.getTechnologies().size(), mappedResponse.getTechnologies().size());
         }
 
-        // Verificación cuando la lista de capacidades es nula
         List<CapacityResponse> nullMappedResponseList = mapper.toCapacityResponseList(null);
         assertNull(nullMappedResponseList);
     }
