@@ -7,6 +7,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,6 +86,26 @@ class IVersionBootcampEntityMapperImplTest {
 
         assertNull(versionBootcamp.getBootcampId());
         assertNull(versionBootcamp.getBootcampName());
+    }
+
+    @Test
+    @DisplayName("When_VersionBootcampEntityListIsNotEmpty_Expect_ListOfVersionBootcampsReturned")
+    void testToModelList() {
+        List<VersionBootcampEntity> versionBootcampEntities = Arrays.asList(
+                new VersionBootcampEntity(1L, 20, LocalDate.of(2024, 4, 7), LocalDate.of(2024, 4, 14), new BootcampEntity()),
+                new VersionBootcampEntity(2L, 30, LocalDate.of(2024, 4, 7), LocalDate.of(2024, 4, 14), new BootcampEntity())
+        );
+
+        List<VersionBootcamp> result = mapper.toModelList(versionBootcampEntities);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("When_VersionBootcampEntityListIsNull_Expect_Failed")
+    void testToModelListWithNullList() {
+        List<VersionBootcamp> result = mapper.toModelList(null);
+        assertNull(result);
     }
 }
 

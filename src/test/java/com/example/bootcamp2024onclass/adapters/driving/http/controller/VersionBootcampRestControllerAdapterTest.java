@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -59,5 +60,12 @@ class VersionBootcampRestControllerAdapterTest {
         verify(versionBootcampRequestMapper, times(1)).addRequestToVersionBootcamp(request);
         verify(versionBootcampServicePort, times(1)).saveVersionBootcamp(expectedVersionBootcamp);
         verify(versionBootcampResponseMapper, times(1)).toVersionBootcampResponse(expectedVersionBootcamp);
+    }
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_Expect_SuccessfulResponse")
+    void shouldReturnAllVersionBootcampsSuccessfully() {
+        ResponseEntity<List<VersionBootcampResponse>> response = versionBootcampRestControllerAdapter.getAllVersionBootcamps(0, 10, null, true, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

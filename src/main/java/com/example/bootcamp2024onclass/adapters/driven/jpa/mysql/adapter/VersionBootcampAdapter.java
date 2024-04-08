@@ -55,44 +55,12 @@ public class VersionBootcampAdapter implements IVersionBootcampPersistencePort {
     public List<VersionBootcamp> getAllVersionBootcamps(Integer page, Integer size, String isOrderBy, boolean isAscending, String bootcampName) {
         Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable;
+
         if (bootcampName != null && !bootcampName.isEmpty()) {
-            Sort sort;
-            if(isOrderBy == null || isOrderBy == "") {
-                sort = Sort.by(direction, "startDate");
-            } else {
-                switch (isOrderBy) {
-                    case "startDate":
-                        sort = Sort.by(direction, "startDate");
-                        break;
-                    case "maximumQuota":
-                        sort = Sort.by(direction, "maximumQuota");
-                        break;
-                    default:
-                        sort = Sort.by(direction, "startDate");
-                        break;
-                }
-            }
+            Sort sort = isNullOrEmpty(isOrderBy) ? Sort.by(direction, "startDate") : getSortForOrderBy(isOrderBy, direction);
             pageable = PageRequest.of(page, size, sort);
         } else {
-            Sort sort;
-            if(isOrderBy == null || isOrderBy == "") {
-                sort = Sort.by(direction, "bootcamp.name");
-            } else {
-                switch (isOrderBy) {
-                    case "name":
-                        sort = Sort.by(direction, "bootcamp.name");
-                        break;
-                    case "startDate":
-                        sort = Sort.by(direction, "startDate");
-                        break;
-                    case "maximumQuota":
-                        sort = Sort.by(direction, "maximumQuota");
-                        break;
-                    default:
-                        sort = Sort.by(direction, "bootcamp.name");
-                        break;
-                }
-            }
+            Sort sort = isNullOrEmpty(isOrderBy) ? Sort.by(direction, "bootcamp.name") : getSortForOrderBy(isOrderBy, direction);
             pageable = PageRequest.of(page, size, sort);
         }
 
@@ -112,5 +80,20 @@ public class VersionBootcampAdapter implements IVersionBootcampPersistencePort {
         return versionBootcamps.stream()
                 .map(versionBootcampEntityMapper::toModel)
                 .toList();
+    }
+
+    public boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    public Sort getSortForOrderBy(String orderBy, Sort.Direction direction) {
+        switch (orderBy) {
+            case "startDate":
+                return Sort.by(direction, "startDate");
+            case "maximumQuota":
+                return Sort.by(direction, "maximumQuota");
+            default:
+                return Sort.by(direction, "startDate");
+        }
     }
 }

@@ -12,7 +12,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -89,5 +92,16 @@ class VersionBootcampUseCaseTest {
         assertThrows(RuntimeException.class, () -> {
             versionBootcampUseCase.saveVersionBootcamp(versionBootcamp);
         });
+    }
+
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_Expect_SuccessfulRetrieval")
+    void testGetAllVersionBootcamps_Success() {
+        List<VersionBootcamp> expectedVersionBootcamps = new ArrayList<>();
+        when(versionBootcampPersistencePort.getAllVersionBootcamps(1, 10, "startDate", true, "Bootcamp A")).thenReturn(expectedVersionBootcamps);
+
+        List<VersionBootcamp> result = versionBootcampUseCase.getAllVersionBootcamps(1, 10, "startDate", true, "Bootcamp A");
+
+        assertEquals(expectedVersionBootcamps, result);
     }
 }
