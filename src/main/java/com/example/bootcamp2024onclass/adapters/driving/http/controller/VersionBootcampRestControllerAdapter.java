@@ -9,12 +9,10 @@ import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/versionBootcamp")
@@ -30,6 +28,18 @@ public class VersionBootcampRestControllerAdapter {
         versionBootcamp = versionBootcampServicePort.saveVersionBootcamp(versionBootcamp);
         VersionBootcampResponse response = versionBootcampResponseMapper.toVersionBootcampResponse(versionBootcamp);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @GetMapping("/")
+    public ResponseEntity<List<VersionBootcampResponse>> getAllVersionBootcamps(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String isOrderBy,
+            @RequestParam(required = false, defaultValue = "true") boolean isAscending,
+            @RequestParam(required = false) String bootcampName)
+    {
+        return ResponseEntity.ok(versionBootcampResponseMapper.toVersionBootcampResponseList(
+                versionBootcampServicePort.getAllVersionBootcamps(page, size, isOrderBy, isAscending, bootcampName)
+        ));
     }
 
 }

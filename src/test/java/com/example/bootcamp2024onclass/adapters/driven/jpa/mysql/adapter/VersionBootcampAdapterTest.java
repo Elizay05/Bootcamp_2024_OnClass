@@ -9,16 +9,21 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IBoo
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IVersionBootcampRepository;
 import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class VersionBootcampAdapterTest {
@@ -103,5 +108,46 @@ class VersionBootcampAdapterTest {
 
         // Invocation & Verification
         assertThrows(ElementNotFoundException.class, () -> versionBootcampAdapter.saveVersionBootcamp(versionBootcamp));
+    }
+
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_WithBootcampName_Expect_SuccessfulResult")
+    void testGetAllVersionBootcampsWithBootcampName() {
+        when(bootcampRepository.findByName("SampleBootcamp")).thenReturn(Optional.of(new BootcampEntity()));
+        when(versionBootcampRepository.findByBootcamp(any(BootcampEntity.class), any(Pageable.class)))
+                .thenReturn(Arrays.asList(new VersionBootcampEntity(), new VersionBootcampEntity()));
+
+        List<VersionBootcamp> result = versionBootcampAdapter.getAllVersionBootcamps(0, 10, null, true, "SampleBootcamp");
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_WithOutBootcampName_Expect_SuccessfulResult")
+    void testGetAllVersionBootcampsWithoutBootcampName() {
+        when(versionBootcampRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(new VersionBootcampEntity(), new VersionBootcampEntity())));
+
+        List<VersionBootcamp> result = versionBootcampAdapter.getAllVersionBootcamps(0, 10, null, true, null);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_WithOrderByMaximumQuota_Expect_SuccessfulResult")
+    void testGetAllVersionBootcampsWithOrderByMaximumQuota() {
+        when(versionBootcampRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(new VersionBootcampEntity(), new VersionBootcampEntity())));
+
+        List<VersionBootcamp> result = versionBootcampAdapter.getAllVersionBootcamps(0, 10, "maximumQuota", true, null);
+
+        assertEquals(2, result.size());
+    }
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_WithOrderByStartDate_Expect_SuccessfulResult")
+    void testGetAllVersionBootcampsWithOrderByStartDate() {
+        when(versionBootcampRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList(new VersionBootcampEntity(), new VersionBootcampEntity())));
+
+        List<VersionBootcamp> result = versionBootcampAdapter.getAllVersionBootcamps(0, 10, "startDate", true, null);
+
+        assertEquals(2, result.size());
     }
 }
