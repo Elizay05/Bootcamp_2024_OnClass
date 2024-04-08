@@ -10,8 +10,13 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IVer
 import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -44,5 +49,68 @@ public class VersionBootcampAdapter implements IVersionBootcampPersistencePort {
         VersionBootcampEntity savedVersionBootcampEntity = versionBootcampRepository.save(versionBootcampEntity);
 
         return versionBootcampEntityMapper.toModel(savedVersionBootcampEntity);
+    }
+
+    @Override
+    public List<VersionBootcamp> getAllVersionBootcamps(Integer page, Integer size, String isOrderBy, boolean isAscending, String bootcampName) {
+        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable;
+        if (bootcampName != null && !bootcampName.isEmpty()) {
+            Sort sort;
+            if(isOrderBy == null || isOrderBy == "") {
+                sort = Sort.by(direction, "startDate");
+            } else {
+                switch (isOrderBy) {
+                    case "startDate":
+                        sort = Sort.by(direction, "startDate");
+                        break;
+                    case "maximumQuota":
+                        sort = Sort.by(direction, "maximumQuota");
+                        break;
+                    default:
+                        sort = Sort.by(direction, "startDate");
+                        break;
+                }
+            }
+            pageable = PageRequest.of(page, size, sort);
+        } else {
+            Sort sort;
+            if(isOrderBy == null || isOrderBy == "") {
+                sort = Sort.by(direction, "bootcamp.name");
+            } else {
+                switch (isOrderBy) {
+                    case "name":
+                        sort = Sort.by(direction, "bootcamp.name");
+                        break;
+                    case "startDate":
+                        sort = Sort.by(direction, "startDate");
+                        break;
+                    case "maximumQuota":
+                        sort = Sort.by(direction, "maximumQuota");
+                        break;
+                    default:
+                        sort = Sort.by(direction, "bootcamp.name");
+                        break;
+                }
+            }
+            pageable = PageRequest.of(page, size, sort);
+        }
+
+        List<VersionBootcampEntity> versionBootcamps;
+        if (bootcampName != null && !bootcampName.isEmpty()) {
+            Optional<BootcampEntity> searchBootcampOptional = bootcampRepository.findByName(bootcampName);
+            if (searchBootcampOptional.isPresent()) {
+                BootcampEntity bootcamp = searchBootcampOptional.get();
+                versionBootcamps = versionBootcampRepository.findByBootcamp(bootcamp, pageable);
+            } else {
+                versionBootcamps = Collections.emptyList();
+            }
+        } else {
+            versionBootcamps = versionBootcampRepository.findAll(pageable).getContent();
+        }
+
+        return versionBootcamps.stream()
+                .map(versionBootcampEntityMapper::toModel)
+                .toList();
     }
 }

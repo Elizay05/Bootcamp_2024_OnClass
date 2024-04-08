@@ -7,6 +7,7 @@ import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class VersionBootcampUseCase implements IVersionBootcampServicePort{
     private final IVersionBootcampPersistencePort versionBootcampPersistencePort;
@@ -28,5 +29,10 @@ public class VersionBootcampUseCase implements IVersionBootcampServicePort{
         }
 
         return versionBootcampPersistencePort.saveVersionBootcamp(versionBootcamp);
+    }
+
+    @Override
+    public List<VersionBootcamp> getAllVersionBootcamps(Integer page, Integer size, String orderBy, boolean isAscending, String bootcampName){
+        return versionBootcampPersistencePort.getAllVersionBootcamps(page, size, orderBy, isAscending, bootcampName);
     }
 }
