@@ -6,6 +6,11 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampReq
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,14 @@ public class BootcampRestControllerAdapter {
     private final IBootcampRequestMapper bootcampRequestMapper;
     private final IBootcampResponseMapper bootcampResponseMapper;
 
+    @Operation(summary = "Create a new Bootcamp")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Correct create a new Bootcamp",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BootcampResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Bootcamp already exists or size of capacities are invalid or capacities are repeated or fields are invalid", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Capacity not found", content = @Content)
+    })
     @PostMapping("/")
     public ResponseEntity<BootcampResponse> addBootcamp(@Valid @RequestBody AddBootcampRequest request) {
         Bootcamp bootcamp = bootcampRequestMapper.addRequestToBootcamp(request);
@@ -31,6 +44,11 @@ public class BootcampRestControllerAdapter {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Get Bootcamps with pagination and order by name or order by size of capacities")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Correct get Bootcamps",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BootcampResponse.class))  })})
     @GetMapping("/")
     public ResponseEntity<List<BootcampResponse>> getAllBootcamps(
             @RequestParam(defaultValue = "0") Integer page,
