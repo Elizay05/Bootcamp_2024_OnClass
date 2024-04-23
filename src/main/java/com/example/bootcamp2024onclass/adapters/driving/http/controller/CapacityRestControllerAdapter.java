@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ public class CapacityRestControllerAdapter {
             @ApiResponse(responseCode = "400", description = "Capacitie already exists or size of technologies are invalid or technoloies are repeated or fields are invalid", content = @Content),
             @ApiResponse(responseCode = "404", description = "Technology not found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
     public ResponseEntity<CapacityResponse> addCapacity(@Valid @RequestBody AddCapacityRequest request) {
         Capacity capacity = capacityRequestMapper.addRequestToCapacity(request);

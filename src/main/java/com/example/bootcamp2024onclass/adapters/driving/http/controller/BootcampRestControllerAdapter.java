@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ public class BootcampRestControllerAdapter {
             @ApiResponse(responseCode = "400", description = "Bootcamp already exists or size of capacities are invalid or capacities are repeated or fields are invalid", content = @Content),
             @ApiResponse(responseCode = "404", description = "Capacity not found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
     public ResponseEntity<BootcampResponse> addBootcamp(@Valid @RequestBody AddBootcampRequest request) {
         Bootcamp bootcamp = bootcampRequestMapper.addRequestToBootcamp(request);

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ public class VersionBootcampRestControllerAdapter {
             @ApiResponse(responseCode = "400", description = "Version Date Bootcamp is already in use or the start date is before the current date or the start date is after the end date or fields are invalid", content = @Content),
             @ApiResponse(responseCode = "404", description = "Bootcamp not found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
     public ResponseEntity<VersionBootcampResponse> addVersionBootcamp(@Valid @RequestBody AddVersionBootcampRequest request) {
         VersionBootcamp versionBootcamp = versionBootcampRequestMapper.addRequestToVersionBootcamp(request);
@@ -49,6 +51,7 @@ public class VersionBootcampRestControllerAdapter {
             @ApiResponse(responseCode = "200", description = "Correct get Version Bootcamps",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = VersionBootcampResponse.class))  })})
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @GetMapping("/")
     public ResponseEntity<List<VersionBootcampResponse>> getAllVersionBootcamps(
             @RequestParam(defaultValue = "0") Integer page,
