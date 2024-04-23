@@ -35,7 +35,8 @@ public class VersionBootcampRestControllerAdapter {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = BootcampResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Version Date Bootcamp is already in use or the start date is before the current date or the start date is after the end date or fields are invalid", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Bootcamp not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Bootcamp not found", content = @Content),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
@@ -50,7 +51,9 @@ public class VersionBootcampRestControllerAdapter {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Correct get Version Bootcamps",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = VersionBootcampResponse.class))  })})
+                            schema = @Schema(implementation = VersionBootcampResponse.class))  }),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
+    })
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @GetMapping("/")
     public ResponseEntity<List<VersionBootcampResponse>> getAllVersionBootcamps(

@@ -35,7 +35,8 @@ public class CapacityRestControllerAdapter {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CapacityResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Capacitie already exists or size of technologies are invalid or technoloies are repeated or fields are invalid", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Technology not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Technology not found", content = @Content),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
@@ -50,7 +51,9 @@ public class CapacityRestControllerAdapter {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Correct get Capacities",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CapacityResponse.class))  })})
+                            schema = @Schema(implementation = CapacityResponse.class))  }),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
+    })
     @GetMapping("/")
     public ResponseEntity<List<CapacityResponse>> getAllCapacities(
             @RequestParam(defaultValue = "0") Integer page,

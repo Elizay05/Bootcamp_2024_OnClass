@@ -23,7 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException, ServletException {
         response.setContentType("application/json");
 
-        String errorMessage = "Acceso no autorizado";
+        String errorMessage = "Access is Denied";
         if (request.getSession().getAttribute("error") != null) {
             errorMessage = request.getSession().getAttribute("error").toString();
         }

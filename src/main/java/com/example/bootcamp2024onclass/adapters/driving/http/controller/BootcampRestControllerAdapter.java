@@ -35,7 +35,8 @@ public class BootcampRestControllerAdapter {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = BootcampResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Bootcamp already exists or size of capacities are invalid or capacities are repeated or fields are invalid", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Capacity not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Capacity not found", content = @Content),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @PostMapping("/")
@@ -50,7 +51,9 @@ public class BootcampRestControllerAdapter {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Correct get Bootcamps",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BootcampResponse.class))  })})
+                            schema = @Schema(implementation = BootcampResponse.class))  }),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
+    })
     @GetMapping("/")
     public ResponseEntity<List<BootcampResponse>> getAllBootcamps(
             @RequestParam(defaultValue = "0") Integer page,

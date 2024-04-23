@@ -1,19 +1,27 @@
 package com.example.bootcamp2024onclass.configuration.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
-    private static final SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+    private final String secretKey;
+    private final SecretKey key;
+
+    public JwtTokenProvider(@Value("${secretKey}") String secretKey) {
+        this.secretKey = secretKey;
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.secretKey));
+    }
 
     public boolean validateToken(String token) {
         try {
