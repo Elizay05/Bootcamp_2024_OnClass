@@ -1,8 +1,11 @@
 package com.example.bootcamp2024onclass.domain.api.usecase;
 
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,25 +74,50 @@ class CapacityUseCaseTest {
     @Test
     @DisplayName("When_GetAllCapacities_Expect_SuccessfulRetrieval")
     void testGetAllCapacities_Success() {
-        Integer page = 1;
-        Integer size = 10;
-        boolean isOrderByName = true;
-        boolean isAscending = true;
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Capacity A", "Description A", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Capacity B", "Description B", Arrays.asList(new Technology(2L), new Technology(3L), new Technology(4L)))
+        );
+        CustomPage<Capacity> mockCustomPage = new CustomPage<>(mockCapacities, 0, 10, 2, 1);
 
-        Technology tech1 = new Technology(1L, "Java", "Programming language");
-        Technology tech2 = new Technology(2L, "Python", "Programming language");
-        Technology tech3 = new Technology(3L, "JavaScript", "Programming language");
+        when(capacityPersistencePort.getAllCapacities(criteria)).thenReturn(mockCustomPage);
 
-        Capacity capacity1 = new Capacity(1L, "Capacity 1", "Description 1", Arrays.asList(tech1, tech2, tech3));
-        Capacity capacity2 = new Capacity(2L, "Capacity 2", "Description 2", Arrays.asList(tech2, tech3, tech1));
+        CustomPage<Capacity> result = capacityUseCase.getAllCapacities(criteria);
 
-        List<Capacity> expectedCapacities = Arrays.asList(capacity1, capacity2);
+        verify(capacityPersistencePort, times(1)).getAllCapacities(criteria);
 
-        when(capacityPersistencePort.getAllCapacities(page, size, isOrderByName, isAscending)).thenReturn(expectedCapacities);
+        assertEquals(mockCustomPage.getPageNumber(), result.getPageNumber());
+        assertEquals(mockCustomPage.getPageSize(), result.getPageSize());
+        assertEquals(mockCustomPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockCustomPage.getTotalPages(), result.getTotalPages());
+        assertEquals(mockCapacities.size(), result.getContent().size());
+        assertEquals(mockCapacities.get(0).getId(), result.getContent().get(0).getId());
+        assertEquals(mockCapacities.get(0).getName(), result.getContent().get(0).getName());
+        assertEquals(mockCapacities.get(1).getId(), result.getContent().get(1).getId());
+        assertEquals(mockCapacities.get(1).getName(), result.getContent().get(1).getName());
+    }
 
-        List<Capacity> actualCapacities = capacityUseCase.getAllCapacities(page, size, isOrderByName, isAscending);
+    @Test
+    @DisplayName("When_GetAllTotalCapacities_Expect_SuccessfulRetrieval")
+    void testGetTotalBodyCapacities_Success() {
+        List<Technology> mockTechnologies = Arrays.asList(
+                new Technology(1L, "Java", "Programming language"),
+                new Technology(2L, "Python", "Programming language"),
+                new Technology(3L, "C++", "Programming language")
+        );
 
-        assertEquals(expectedCapacities, actualCapacities);
-        verify(capacityPersistencePort, times(1)).getAllCapacities(page, size, isOrderByName, isAscending);
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Java", "Programming language", mockTechnologies),
+                new Capacity(2L, "Python", "Programming language", mockTechnologies)
+        );
+
+        when(capacityPersistencePort.getTotalBodyCapacities()).thenReturn(mockCapacities);
+
+        List<Capacity> result = capacityUseCase.getTotalBodyCapacities();
+
+        assertEquals(mockCapacities, result);
+
+        verify(capacityPersistencePort, times(1)).getTotalBodyCapacities();
     }
 }

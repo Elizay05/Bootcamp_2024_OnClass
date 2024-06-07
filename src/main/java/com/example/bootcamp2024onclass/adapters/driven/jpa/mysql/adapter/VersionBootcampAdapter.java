@@ -7,12 +7,13 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.Eleme
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.IVersionBootcampEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IBootcampRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IVersionBootcampRepository;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,34 +53,40 @@ public class VersionBootcampAdapter implements IVersionBootcampPersistencePort {
     }
 
     @Override
-    public List<VersionBootcamp> getAllVersionBootcamps(Integer page, Integer size, String isOrderBy, boolean isAscending, String bootcampName) {
-        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
+    public CustomPage<VersionBootcamp> getAllVersionBootcamps(PaginationCriteria criteria, String bootcampName) {
+        Sort.Direction direction = criteria.getSortDirection() == SortDirection.ASC ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Page<VersionBootcampEntity> page;
         Pageable pageable;
 
-        if (bootcampName != null && !bootcampName.isEmpty()) {
-            Sort sort = isNullOrEmpty(isOrderBy) ? Sort.by(direction, "startDate") : getSortForOrderBy(isOrderBy, direction);
-            pageable = PageRequest.of(page, size, sort);
+        if ("startDate".equals(criteria.getSortBy())) {
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "startDate"));
         } else {
-            Sort sort = isNullOrEmpty(isOrderBy) ? Sort.by(direction, "bootcamp.name") : getSortForOrderBy(isOrderBy, direction);
-            pageable = PageRequest.of(page, size, sort);
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "maximumQuota"));
         }
 
-        List<VersionBootcampEntity> versionBootcamps;
         if (bootcampName != null && !bootcampName.isEmpty()) {
             Optional<BootcampEntity> searchBootcampOptional = bootcampRepository.findByName(bootcampName);
             if (searchBootcampOptional.isPresent()) {
                 BootcampEntity bootcamp = searchBootcampOptional.get();
-                versionBootcamps = versionBootcampRepository.findByBootcamp(bootcamp, pageable);
+                page = versionBootcampRepository.findByBootcamp(bootcamp, pageable);
             } else {
-                versionBootcamps = Collections.emptyList();
+                page = new PageImpl<>(Collections.emptyList(), pageable, 0);
             }
+        } else if ("startDate".equals(criteria.getSortBy())) {
+            page = versionBootcampRepository.findAll(pageable);
         } else {
-            versionBootcamps = versionBootcampRepository.findAll(pageable).getContent();
+            if (criteria.getSortDirection() == SortDirection.ASC) {
+                page = versionBootcampRepository.findByMaximumQuotaAsc(pageable);
+            } else {
+                page = versionBootcampRepository.findByMaximumQuotaDesc(pageable);
+            }
         }
 
-        return versionBootcamps.stream()
+        List<VersionBootcamp> versionBootcamps = page.getContent().stream()
                 .map(versionBootcampEntityMapper::toModel)
                 .toList();
+
+        return new CustomPage<>(versionBootcamps, page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages());
     }
 
     public boolean isNullOrEmpty(String str) {

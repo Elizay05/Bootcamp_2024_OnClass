@@ -2,6 +2,8 @@ package com.example.bootcamp2024onclass.domain.api.usecase;
 
 import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
 
 import java.util.List;
@@ -20,8 +22,13 @@ public class CapacityUseCase implements ICapacityServicePort {
     }
 
     @Override
-    public List<Capacity> getAllCapacities(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
-        return capacityPersistencePort.getAllCapacities(page, size, isOrderByName, isAscending);
+    public CustomPage<Capacity> getAllCapacities(PaginationCriteria criteria) {
+        return capacityPersistencePort.getAllCapacities(criteria);
+    }
+
+    @Override
+    public List<Capacity> getTotalBodyCapacities() {
+        return capacityPersistencePort.getTotalBodyCapacities();
     }
 }
 

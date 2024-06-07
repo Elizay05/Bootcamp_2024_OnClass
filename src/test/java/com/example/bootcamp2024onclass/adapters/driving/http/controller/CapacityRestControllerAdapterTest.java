@@ -7,7 +7,10 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ICapacityReq
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ICapacityResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -77,36 +81,59 @@ class CapacityRestControllerAdapterTest {
     }
 
     @Test
-    @DisplayName("When_GetAllCapacities_Expect_SuccessfulResponse")
+    @DisplayName("When_GetAllCapacities_Expect_CorrectResponse")
     void shouldReturnAllCapacitiesSuccessfully() {
-        Integer page = 1;
-        Integer size = 10;
-        boolean isOrderByName = true;
-        boolean isAscending = true;
-
-        Technology javaTech = new Technology(1L, "Java", "Programming language");
-        Technology pythonTech = new Technology(2L, "Python", "Programming language");
-        Technology jsTech = new Technology(3L, "JavaScript", "Programming language");
-
-        List<Capacity> capacities = Arrays.asList(
-                new Capacity(1L, "Capacity 1", "Description 1", Arrays.asList(javaTech, pythonTech, jsTech)),
-                new Capacity(2L, "Capacity 2", "Description 2", Arrays.asList(pythonTech, jsTech, javaTech))
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Capacity A", "Description A", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Capacity B", "Description B", Arrays.asList(new Technology(4L), new Technology(5L), new Technology(6L)))
         );
+        CustomPage<Capacity> mockCustomPage = new CustomPage<>(mockCapacities, 0, 10, 2, 1);
 
-        List<CapacityResponse> expectedResponses = Arrays.asList(
-                new CapacityResponse(1L, "Capacity 1", "Description 1", Collections.emptyList()),
-                new CapacityResponse(2L, "Capacity 2", "Description 2", Collections.emptyList())
-        );
+        when(capacityServicePort.getAllCapacities(any(PaginationCriteria.class))).thenReturn(mockCustomPage);
 
-        when(capacityServicePort.getAllCapacities(page, size, isOrderByName, isAscending)).thenReturn(capacities);
-        when(capacityResponseMapper.toCapacityResponseList(capacities)).thenReturn(expectedResponses);
+        when(capacityResponseMapper.toCapacityResponse(any(Capacity.class)))
+                .thenAnswer(invocation -> {
+                    Capacity capacity = invocation.getArgument(0);
+                    return new CapacityResponse(capacity.getId(), capacity.getName(), capacity.getDescription(), Collections.emptyList());
+                });
 
-        ResponseEntity<List<CapacityResponse>> responseEntity = capacityRestControllerAdapter.getAllCapacities(page, size, isOrderByName, isAscending);
+        ResponseEntity<CustomPage<CapacityResponse>> responseEntity = capacityRestControllerAdapter.getAllCapacities(0, 10, true, true);
 
+        assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponses, responseEntity.getBody());
-        verify(capacityServicePort, times(1)).getAllCapacities(page, size, isOrderByName, isAscending);
-        verify(capacityResponseMapper, times(1)).toCapacityResponseList(capacities);
+        assertNotNull(responseEntity.getBody());
+        assertEquals(mockCapacities.size(), responseEntity.getBody().getContent().size());
+        assertEquals(mockCapacities.get(0).getName(), responseEntity.getBody().getContent().get(0).getName());
+        assertEquals(mockCapacities.get(1).getName(), responseEntity.getBody().getContent().get(1).getName());
+    }
+
+
+    @Test
+    @DisplayName("When_GetTotalBodyCapacities_Expect_CorrectResponse")
+    void testGetTotalBodyCapacities() {
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Java", "Programming language", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Python", "Programming language", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L)))
+        );
+
+        List<CapacityResponse> mockCapacityResponses = Arrays.asList(
+                new CapacityResponse(1L, "Java", "Programming language", Collections.emptyList()),
+                new CapacityResponse(2L, "Python", "Programming language", Collections.emptyList())
+        );
+
+        when(capacityServicePort.getTotalBodyCapacities()).thenReturn(mockCapacities);
+
+        when(capacityResponseMapper.toCapacityResponseList(mockCapacities)).thenReturn(mockCapacityResponses);
+
+        ResponseEntity<List<CapacityResponse>> responseEntity = capacityRestControllerAdapter.getTotalBodyCapacities();
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+
+        assertEquals(mockCapacityResponses, responseEntity.getBody());
+
+        verify(capacityServicePort, times(1)).getTotalBodyCapacities();
+        verify(capacityResponseMapper, times(1)).toCapacityResponseList(mockCapacities);
     }
 }
 

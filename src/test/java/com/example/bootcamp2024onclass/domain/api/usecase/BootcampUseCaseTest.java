@@ -1,9 +1,8 @@
 package com.example.bootcamp2024onclass.domain.api.usecase;
 
-import com.example.bootcamp2024onclass.domain.model.Bootcamp;
-import com.example.bootcamp2024onclass.domain.model.Capacity;
-import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.model.*;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,31 +72,27 @@ class BootcampUseCaseTest {
     @Test
     @DisplayName("When_GetAllBootcamps_Expect_SuccessfulRetrieval")
     void testGetAllBootcamps_Success() {
-        Integer page = 1;
-        Integer size = 10;
-        boolean isOrderByName = true;
-        boolean isAscending = true;
-
-        List<Technology> technologies = Arrays.asList(
-                new Technology(1L),
-                new Technology(2L),
-                new Technology(3L)
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Bootcamp> mockBootcamps = Arrays.asList(
+                new Bootcamp(1L, "Capacity A", "Description A", Arrays.asList(new Capacity(1L), new Capacity(2L), new Capacity(3L))),
+                new Bootcamp(2L, "Capacity B", "Description B", Arrays.asList(new Capacity(2L), new Capacity(3L), new Capacity(4L)))
         );
+        CustomPage<Bootcamp> mockCustomPage = new CustomPage<>(mockBootcamps, 0, 10, 2, 1);
 
-        Capacity capacity1 = new Capacity(1L, "Capacity 1", "Description 1", technologies);
-        Capacity capacity2 = new Capacity(2L, "Capacity 2", "Description 2", technologies);
-        Capacity capacity3 = new Capacity(3L, "Capacity 3", "Description 3", technologies);
+        when(bootcampPersistencePort.getAllBootcamps(criteria)).thenReturn(mockCustomPage);
 
-        Bootcamp bootcamp1 = new Bootcamp(1L, "Bootcamp 1", "Description 1", Arrays.asList(capacity1, capacity2, capacity3));
-        Bootcamp bootcamp2 = new Bootcamp(2L, "Bootcamp 2", "Description 2", Arrays.asList(capacity2, capacity3, capacity1));
+        CustomPage<Bootcamp> result = bootcampUseCase.getAllBootcamps(criteria);
 
-        List<Bootcamp> expectedBootcamps = Arrays.asList(bootcamp1, bootcamp2);
+        verify(bootcampPersistencePort, times(1)).getAllBootcamps(criteria);
 
-        when(bootcampPersistencePort.getAllBootcamps(page, size, isOrderByName, isAscending)).thenReturn(expectedBootcamps);
-
-        List<Bootcamp> actualBootcamps = bootcampUseCase.getAllBootcamps(page, size, isOrderByName, isAscending);
-
-        assertEquals(expectedBootcamps, actualBootcamps);
-        verify(bootcampPersistencePort, times(1)).getAllBootcamps(page, size, isOrderByName, isAscending);
+        assertEquals(mockCustomPage.getPageNumber(), result.getPageNumber());
+        assertEquals(mockCustomPage.getPageSize(), result.getPageSize());
+        assertEquals(mockCustomPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockCustomPage.getTotalPages(), result.getTotalPages());
+        assertEquals(mockBootcamps.size(), result.getContent().size());
+        assertEquals(mockBootcamps.get(0).getId(), result.getContent().get(0).getId());
+        assertEquals(mockBootcamps.get(0).getName(), result.getContent().get(0).getName());
+        assertEquals(mockBootcamps.get(1).getId(), result.getContent().get(1).getId());
+        assertEquals(mockBootcamps.get(1).getName(), result.getContent().get(1).getName());
     }
 }

@@ -6,6 +6,9 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ICapacityReq
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ICapacityResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.ICapacityServicePort;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/capacity")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class CapacityRestControllerAdapter {
 
     private final ICapacityServicePort capacityServicePort;
@@ -54,14 +58,25 @@ public class CapacityRestControllerAdapter {
                             schema = @Schema(implementation = CapacityResponse.class))  }),
             @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @GetMapping("/")
-    public ResponseEntity<List<CapacityResponse>> getAllCapacities(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
+    public ResponseEntity<CustomPage<CapacityResponse>> getAllCapacities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "true") boolean isOrderByName,
-            @RequestParam(required = false, defaultValue = "true") boolean isAscending){
-        return ResponseEntity.ok(capacityResponseMapper.toCapacityResponseList(
-                capacityServicePort.getAllCapacities(page, size, isOrderByName, isAscending)
-        ));
+            @RequestParam(required = false, defaultValue = "true") boolean isAscending) {
+        PaginationCriteria criteria = new PaginationCriteria(page, size, isAscending ? SortDirection.ASC : SortDirection.DESC, isOrderByName ? "name" : "id");
+        CustomPage<Capacity> capacities = capacityServicePort.getAllCapacities(criteria);
+        CustomPage<CapacityResponse> responses = new CustomPage<>(
+                capacities.getContent().stream().map(capacityResponseMapper::toCapacityResponse).toList(),
+                capacities.getPageNumber(), capacities.getPageSize(), capacities.getTotalElements(), capacities.getTotalPages()
+        );
+        return ResponseEntity.ok(responses);
+    }
+
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @GetMapping("/total_body")
+    public ResponseEntity<List<CapacityResponse>> getTotalBodyCapacities(){
+        return ResponseEntity.ok(capacityResponseMapper.toCapacityResponseList(capacityServicePort.getTotalBodyCapacities()));
     }
 }

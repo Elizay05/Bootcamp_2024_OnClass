@@ -8,13 +8,17 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.IBootcam
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.IBootcampRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,24 +49,26 @@ public class BootcampAdapter implements IBootcampPersistencePort {
     }
 
     @Override
-    public List<Bootcamp> getAllBootcamps(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
-        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
-        String field = isOrderByName ? "name" : "id";
-        Sort sort = Sort.by(direction, field);
-        List<BootcampEntity> bootcamps = bootcampRepository.findAll(sort);
+    public CustomPage<Bootcamp> getAllBootcamps(PaginationCriteria criteria) {
+        Sort.Direction direction = criteria.getSortDirection() == SortDirection.ASC ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Page<BootcampEntity> page;
+        Pageable pageable;
 
-        if (!isOrderByName) {
-            bootcamps.sort(Comparator.comparingInt(bootcamp -> bootcamp.getCapacities().size()));
-            if (!isAscending) {
-                Collections.reverse(bootcamps);
+        if ("name".equals(criteria.getSortBy())) {
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "name"));
+            page = bootcampRepository.findAll(pageable);
+        } else {
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "capacities.size"));
+            if (criteria.getSortDirection() == SortDirection.ASC) {
+                page = bootcampRepository.findAllOrderedByCapacitiesCountAsc(pageable);
+            } else {
+                page = bootcampRepository.findAllOrderedByCapacitiesCountDesc(pageable);
             }
         }
 
-        return bootcamps.stream()
-                .skip((long) page * size)
-                .limit(size)
-                .map(bootcampEntityMapper::toModel)
-                .toList();
+        List<Bootcamp> bootcamps = bootcampEntityMapper.toModelList(page.getContent());
+
+        return new CustomPage<>(bootcamps, pageable.getPageNumber(), pageable.getPageSize(), page.getTotalElements(), page.getTotalPages());
     }
 
 }

@@ -8,7 +8,9 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampRes
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
-import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -78,41 +81,30 @@ class BootcampRestControllerAdapterTest {
     }
 
     @Test
-    @DisplayName("When_GetAllBootcamps_Expect_SuccessfulResponse")
+    @DisplayName("When_GetAllBootcamps_Expect_CorrectResponse")
     void shouldReturnAllBootcampsSuccessfully() {
-        Integer page = 1;
-        Integer size = 10;
-        boolean isOrderByName = true;
-        boolean isAscending = true;
-
-        List<Technology> technologies = Arrays.asList(
-                new Technology(1L),
-                new Technology(2L),
-                new Technology(3L)
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Bootcamp> mockBootcamps = Arrays.asList(
+                new Bootcamp(1L, "Bootcamp A", "Description A", Arrays.asList(new Capacity(1L), new Capacity(2L), new Capacity(3L))),
+                new Bootcamp(2L, "Bootcamp B", "Description B", Arrays.asList(new Capacity(4L), new Capacity(5L), new Capacity(6L)))
         );
+        CustomPage<Bootcamp> mockCustomPage = new CustomPage<>(mockBootcamps, 0, 10, 2, 1);
 
-        Capacity capacity1 = new Capacity(1L, "capacity1", "Description 1", technologies);
-        Capacity capacity2 = new Capacity(2L, "capacity2", "Description 2", technologies);
-        Capacity capacity3 = new Capacity(3L, "capacity3", "Description 3", technologies);
+        when(bootcampServicePort.getAllBootcamps(any(PaginationCriteria.class))).thenReturn(mockCustomPage);
 
-        List<Bootcamp> bootcamps = Arrays.asList(
-                new Bootcamp(1L, "Bootcamp 1", "Description 1", Arrays.asList(capacity1, capacity2, capacity3)),
-                new Bootcamp(2L, "Bootcamp 2", "Description 2", Arrays.asList(capacity3, capacity2, capacity1))
-        );
+        when(bootcampResponseMapper.toBootcampResponse(any(Bootcamp.class)))
+                .thenAnswer(invocation -> {
+                    Bootcamp bootcamp = invocation.getArgument(0);
+                    return new BootcampResponse(bootcamp.getId(), bootcamp.getName(), bootcamp.getDescription(), Collections.emptyList());
+                });
 
-        List<BootcampResponse> expectedResponses = Arrays.asList(
-                new BootcampResponse(1L, "Bootcamp 1", "Description 1", Collections.emptyList()),
-                new BootcampResponse(2L, "Bootcamp 2", "Description 2", Collections.emptyList())
-        );
+        ResponseEntity<CustomPage<BootcampResponse>> responseEntity = bootcampRestControllerAdapter.getAllBootcamps(0, 10, true, true);
 
-        when(bootcampServicePort.getAllBootcamps(page, size, isOrderByName, isAscending)).thenReturn(bootcamps);
-        when(bootcampResponseMapper.toBootcampResponseList(bootcamps)).thenReturn(expectedResponses);
-
-        ResponseEntity<List<BootcampResponse>> responseEntity = bootcampRestControllerAdapter.getAllBootcamps(page, size, isOrderByName, isAscending);
-
+        assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponses, responseEntity.getBody());
-        verify(bootcampServicePort, times(1)).getAllBootcamps(page, size, isOrderByName, isAscending);
-        verify(bootcampResponseMapper, times(1)).toBootcampResponseList(bootcamps);
+        assertNotNull(responseEntity.getBody());
+        assertEquals(mockBootcamps.size(), responseEntity.getBody().getContent().size());
+        assertEquals(mockBootcamps.get(0).getName(), responseEntity.getBody().getContent().get(0).getName());
+        assertEquals(mockBootcamps.get(1).getName(), responseEntity.getBody().getContent().get(1).getName());
     }
 }

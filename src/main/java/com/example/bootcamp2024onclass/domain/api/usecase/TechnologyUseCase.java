@@ -1,8 +1,11 @@
 package com.example.bootcamp2024onclass.domain.api.usecase;
 
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
 import com.example.bootcamp2024onclass.domain.spi.ITechnologyPersistencePort;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +25,13 @@ public class TechnologyUseCase implements ITechnologyServicePort {
 
 
     @Override
-    public List<Technology> getAllTechnologies(Integer page, Integer size, Boolean isAscending) {
-        return technologyPersistencePort.getAllTechnologies(page, size, isAscending);
+    public CustomPage<Technology> getAllTechnologies(PaginationCriteria criteria) {
+        return technologyPersistencePort.getAllTechnologies(criteria);
+    }
+
+    @Override
+    public List<Technology> getTotalBodyTechnologies() {
+        return technologyPersistencePort.getTotalBodyTechnologies();
     }
 
 }
