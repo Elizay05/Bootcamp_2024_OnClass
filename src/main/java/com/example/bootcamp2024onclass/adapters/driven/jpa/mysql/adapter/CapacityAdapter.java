@@ -4,17 +4,22 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.Capacity
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.TechnologyEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.CapacityAlreadyExistsException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.NoDataFoundException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.spi.ICapacityPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,23 +49,34 @@ public class CapacityAdapter implements ICapacityPersistencePort {
     }
 
     @Override
-    public List<Capacity> getAllCapacities(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
-        Sort.Direction direction = isAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
-        String field = isOrderByName ? "name" : "id";
-        Sort sort = Sort.by(direction, field);
-        List<CapacityEntity> capacities = capacityRepository.findAll(sort);
+    public CustomPage<Capacity> getAllCapacities(PaginationCriteria criteria) {
+        Sort.Direction direction = criteria.getSortDirection() == SortDirection.ASC ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Page<CapacityEntity> page;
+        Pageable pageable;
 
-        if (!isOrderByName) {
-            capacities.sort(Comparator.comparingInt(capacity -> capacity.getTechnologies().size()));
-            if (!isAscending) {
-                Collections.reverse(capacities);
+        if ("name".equals(criteria.getSortBy())) {
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "name"));
+            page = capacityRepository.findAll(pageable);
+        } else {
+            pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "technologies.size"));
+            if (criteria.getSortDirection() == SortDirection.ASC) {
+                page = capacityRepository.findAllOrderedByTechnologiesCountAsc(pageable);
+            } else {
+                page = capacityRepository.findAllOrderedByTechnologiesCountDesc(pageable);
             }
         }
 
-        return capacities.stream()
-                .skip((long) page * size)
-                .limit(size)
-                .map(capacityEntityMapper::toModel)
-                .toList();
+        List<Capacity> capacities = capacityEntityMapper.toModelList(page.getContent());
+
+        return new CustomPage<>(capacities, pageable.getPageNumber(), pageable.getPageSize(), page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    public List<Capacity> getTotalBodyCapacities() {
+        List<CapacityEntity> capacities = capacityRepository.findAll();
+        if (capacities.isEmpty()) {
+            throw new NoDataFoundException();
+        }
+        return capacityEntityMapper.toModelList(capacities);
     }
 }

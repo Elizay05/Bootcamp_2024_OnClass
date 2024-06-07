@@ -2,8 +2,9 @@ package com.example.bootcamp2024onclass.domain.api.usecase;
 
 import com.example.bootcamp2024onclass.domain.exception.StartDateAfterEndDateException;
 import com.example.bootcamp2024onclass.domain.exception.StartDateBeforeCurrentDateException;
-import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
+import com.example.bootcamp2024onclass.domain.model.*;
 import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,6 +96,7 @@ class VersionBootcampUseCaseTest {
         });
     }
 
+    /*
     @Test
     @DisplayName("When_GetAllVersionBootcamps_Expect_SuccessfulRetrieval")
     void testGetAllVersionBootcamps_Success() {
@@ -103,5 +106,27 @@ class VersionBootcampUseCaseTest {
         List<VersionBootcamp> result = versionBootcampUseCase.getAllVersionBootcamps(1, 10, "startDate", true, "Bootcamp A");
 
         assertEquals(expectedVersionBootcamps, result);
+    }
+
+     */
+
+    @Test
+    @DisplayName("When_GetAllVersionBootcamps_Expect_SuccessfulRetrieval")
+    void testGetAllVersionBootcamps_Success() {
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<VersionBootcamp> mockVersionBootcamps = new ArrayList<>();
+        CustomPage<VersionBootcamp> mockCustomPage = new CustomPage<>(mockVersionBootcamps, 0, 10, 2, 1);
+
+        when(versionBootcampPersistencePort.getAllVersionBootcamps(criteria, "")).thenReturn(mockCustomPage);
+
+        CustomPage<VersionBootcamp> result = versionBootcampUseCase.getAllVersionBootcamps(criteria, "");
+
+        verify(versionBootcampPersistencePort, times(1)).getAllVersionBootcamps(criteria, "");
+
+        assertEquals(mockCustomPage.getPageNumber(), result.getPageNumber());
+        assertEquals(mockCustomPage.getPageSize(), result.getPageSize());
+        assertEquals(mockCustomPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockCustomPage.getTotalPages(), result.getTotalPages());
+        assertEquals(mockVersionBootcamps.size(), result.getContent().size());
     }
 }

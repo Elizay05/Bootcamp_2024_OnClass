@@ -6,13 +6,15 @@ import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTech
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyRequestMapper;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/technology")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class TechnologyRestControllerAdapter {
     private final ITechnologyServicePort technologyServicePort;
     private final ITechnologyRequestMapper technologyRequestMapper;
@@ -55,13 +58,24 @@ public class TechnologyRestControllerAdapter {
                             schema = @Schema(implementation = TechnologyResponse.class))  }),
             @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
-
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @GetMapping("/")
-    public ResponseEntity<List<TechnologyResponse>> getAllTechnologies(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10")Integer size,
-            @RequestParam(required = false, defaultValue = "true")Boolean isAscending){
-        return ResponseEntity.ok(technologyResponseMapper.toTechnologyResponseList(technologyServicePort.getAllTechnologies(page, size, isAscending)));
+    public ResponseEntity<CustomPage<TechnologyResponse>> getAllTechnologies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "true") boolean isAscending) {
+        PaginationCriteria criteria = new PaginationCriteria(page, size, isAscending ? SortDirection.ASC : SortDirection.DESC, "name");
+        CustomPage<Technology> technologies = technologyServicePort.getAllTechnologies(criteria);
+        CustomPage<TechnologyResponse> responses = new CustomPage<>(
+                technologies.getContent().stream().map(technologyResponseMapper::toTechnologyResponse).toList(),
+                technologies.getPageNumber(), technologies.getPageSize(), technologies.getTotalElements(), technologies.getTotalPages()
+        );
+        return ResponseEntity.ok(responses);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @GetMapping("/total_body")
+    public ResponseEntity<List<TechnologyResponse>> getTotalBodyTechnologies(){
+        return ResponseEntity.ok(technologyResponseMapper.toTechnologyResponseList(technologyServicePort.getTotalBodyTechnologies()));
+    }
 }

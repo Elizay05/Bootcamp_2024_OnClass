@@ -2,9 +2,9 @@ package com.example.bootcamp2024onclass.domain.api.usecase;
 
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.spi.IBootcampPersistencePort;
-
-import java.util.List;
 
 public class BootcampUseCase implements IBootcampServicePort {
 
@@ -20,7 +20,7 @@ public class BootcampUseCase implements IBootcampServicePort {
     }
 
     @Override
-    public List<Bootcamp> getAllBootcamps(Integer page, Integer size, boolean isOrderByName, boolean isAscending) {
-        return bootcampPersistencePort.getAllBootcamps(page, size, isOrderByName, isAscending);
+    public CustomPage<Bootcamp> getAllBootcamps(PaginationCriteria criteria) {
+        return bootcampPersistencePort.getAllBootcamps(criteria);
     }
 }

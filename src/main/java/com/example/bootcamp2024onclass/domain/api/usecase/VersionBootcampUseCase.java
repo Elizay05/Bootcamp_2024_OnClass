@@ -3,11 +3,12 @@ package com.example.bootcamp2024onclass.domain.api.usecase;
 import com.example.bootcamp2024onclass.domain.api.IVersionBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.exception.StartDateAfterEndDateException;
 import com.example.bootcamp2024onclass.domain.exception.StartDateBeforeCurrentDateException;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
 import com.example.bootcamp2024onclass.domain.spi.IVersionBootcampPersistencePort;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class VersionBootcampUseCase implements IVersionBootcampServicePort{
     private final IVersionBootcampPersistencePort versionBootcampPersistencePort;
@@ -32,7 +33,7 @@ public class VersionBootcampUseCase implements IVersionBootcampServicePort{
     }
 
     @Override
-    public List<VersionBootcamp> getAllVersionBootcamps(Integer page, Integer size, String orderBy, boolean isAscending, String bootcampName){
-        return versionBootcampPersistencePort.getAllVersionBootcamps(page, size, orderBy, isAscending, bootcampName);
+    public CustomPage<VersionBootcamp> getAllVersionBootcamps(PaginationCriteria criteria, String bootcampName) {
+        return versionBootcampPersistencePort.getAllVersionBootcamps(criteria, bootcampName);
     }
 }

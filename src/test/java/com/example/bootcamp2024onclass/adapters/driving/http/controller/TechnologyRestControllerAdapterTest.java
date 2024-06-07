@@ -5,7 +5,10 @@ import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTech
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyRequestMapper;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.ITechnologyServicePort;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -64,29 +68,60 @@ class TechnologyRestControllerAdapterTest {
 
 
     @Test
-    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulResponse")
+    @DisplayName("When_GetAllTechnologies_Expect_CorrectResponse")
     void shouldReturnAllTechnologiesSuccessfully() {
-        Integer page = 1;
-        Integer size = 10;
-        Boolean isAscending = true;
-        List<Technology> technologies = Arrays.asList(
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Technology> mockTechnologies = Arrays.asList(
                 new Technology(1L, "Java", "Programming language"),
                 new Technology(2L, "Python", "Programming language")
         );
-        List<TechnologyResponse> expectedResponses = Arrays.asList(
+        CustomPage<Technology> mockCustomPage = new CustomPage<>(mockTechnologies, 0, 10, 2, 1);
+
+        when(technologyServicePort.getAllTechnologies(any(PaginationCriteria.class))).thenReturn(mockCustomPage);
+
+        when(technologyResponseMapper.toTechnologyResponse(any(Technology.class)))
+                .thenAnswer(invocation -> {
+                    Technology tech = invocation.getArgument(0);
+                    return new TechnologyResponse(tech.getId(), tech.getName(), tech.getDescription());
+                });
+
+        ResponseEntity<CustomPage<TechnologyResponse>> responseEntity = technologyRestControllerAdapter.getAllTechnologies(0, 10, true);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(mockTechnologies.size(), responseEntity.getBody().getContent().size());
+        assertEquals(mockTechnologies.get(0).getName(), responseEntity.getBody().getContent().get(0).getName());
+        assertEquals(mockTechnologies.get(1).getName(), responseEntity.getBody().getContent().get(1).getName());
+    }
+
+
+
+    @Test
+    @DisplayName("When_GetTotalBodyTechnologies_Expect_CorrectResponse")
+    void testGetTotalBodyTechnologies() {
+        List<Technology> mockTechnologies = Arrays.asList(
+                new Technology(1L, "Java", "Programming language"),
+                new Technology(2L, "Python", "Programming language")
+        );
+
+        List<TechnologyResponse> mockTechnologyResponses = Arrays.asList(
                 new TechnologyResponse(1L, "Java", "Programming language"),
                 new TechnologyResponse(2L, "Python", "Programming language")
         );
-        when(technologyServicePort.getAllTechnologies(page, size, isAscending)).thenReturn(technologies);
-        when(technologyResponseMapper.toTechnologyResponseList(technologies)).thenReturn(expectedResponses);
 
-        ResponseEntity<List<TechnologyResponse>> responseEntity = technologyRestControllerAdapter.getAllTechnologies(page, size, isAscending);
+        when(technologyServicePort.getTotalBodyTechnologies()).thenReturn(mockTechnologies);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponses, responseEntity.getBody());
-        verify(technologyServicePort, times(1)).getAllTechnologies(page, size, isAscending);
-        verify(technologyResponseMapper, times(1)).toTechnologyResponseList(technologies);
+        when(technologyResponseMapper.toTechnologyResponseList(mockTechnologies)).thenReturn(mockTechnologyResponses);
+
+        ResponseEntity<List<TechnologyResponse>> responseEntity = technologyRestControllerAdapter.getTotalBodyTechnologies();
+
+        assertEquals(200, responseEntity.getStatusCodeValue());
+
+        assertEquals(mockTechnologyResponses, responseEntity.getBody());
+
+        verify(technologyServicePort, times(1)).getTotalBodyTechnologies();
+        verify(technologyResponseMapper, times(1)).toTechnologyResponseList(mockTechnologies);
     }
-
 }
 

@@ -3,20 +3,23 @@ package com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.adapter;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.CapacityEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.entity.TechnologyEntity;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.CapacityAlreadyExistsException;
-import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.ElementNotFoundException;
+import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.NoDataFoundException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ICapacityEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ICapacityRepository;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
 import com.example.bootcamp2024onclass.domain.model.Capacity;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,7 +52,6 @@ class CapacityAdapterTest {
         technologies.add(new Technology(2L, "Python", "Python for beginners"));
         technologies.add(new Technology(3L, "JavaScript", "JavaScript basics"));
 
-        // Crear una nueva instancia de CapacityEntity y configurar la lista de TechnologyEntity
         CapacityEntity capacityEntity = new CapacityEntity();
         Set<TechnologyEntity> technologyEntities = new HashSet<>();
         technologyEntities.add(new TechnologyEntity(1L, "Java", "Java para niños"));
@@ -59,7 +61,6 @@ class CapacityAdapterTest {
 
         Capacity capacity = new Capacity(1L, "Capacity", "Description", technologies);
 
-        // Configurar el mock de capacityEntityMapper para devolver la instancia de CapacityEntity configurada
         when(capacityEntityMapper.toEntity(capacity)).thenReturn(capacityEntity);
         when(capacityRepository.findByName("Capacity")).thenReturn(Optional.empty());
         when(technologyRepository.findById(anyLong())).thenReturn(Optional.of(new TechnologyEntity()));
@@ -134,71 +135,165 @@ class CapacityAdapterTest {
     }*/
 
     @Test
-    @DisplayName("When_GetAllCapacities_OrderByNameAscending_Expect_SuccessfulResult")
-    void shouldOrderCapacitiesByNameAscending()  {
-        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+    @DisplayName("Get All Capacities - Sorted By Name: Should return all capacities sorted by name")
+    void testGetAllCapacitiesSortedByName() {
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
 
-        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+        Set<TechnologyEntity> technologies = Set.of(
+                new TechnologyEntity(1L, "Java", "Java for beginners"),
+                new TechnologyEntity(2L, "Python", "Python for beginners"),
+                new TechnologyEntity(3L, "JavaScript", "JavaScript basics")
+        );
 
-        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, true, true);
+        List<CapacityEntity> mockEntities = Arrays.asList(
+                new CapacityEntity(1L, "Capacity A", "Description A", technologies),
+                new CapacityEntity(2L, "Capacity B", "Description B", technologies)
+        );
+        Page<CapacityEntity> mockPage = new PageImpl<>(mockEntities);
 
-        List<Capacity> expected = mockedCapacityEntities.stream()
-                .map(capacityEntityMapper::toModel)
-                .sorted(Comparator.comparing(Capacity::getName))
-                .collect(Collectors.toList());
+        Sort.Direction direction = Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "name"));
+        when(capacityRepository.findAll(pageable)).thenReturn(mockPage);
 
-        assertEquals(expected, result);
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Capacity A", "Description A", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Capacity B", "Description B", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L)))
+        );
+        when(capacityEntityMapper.toModelList(mockPage.getContent())).thenReturn(mockCapacities);
+
+        CustomPage<Capacity> result = capacityAdapter.getAllCapacities(criteria);
+
+        verify(capacityRepository, times(1)).findAll(pageable);
+        verify(capacityEntityMapper, times(1)).toModelList(mockPage.getContent());
+
+        assertEquals(mockPage.getNumber(), result.getPageNumber());
+        assertEquals(mockPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockPage.getTotalPages(), result.getTotalPages());
+        assertEquals(criteria.getSize(), result.getPageSize());
+        assertEquals(mockCapacities, result.getContent());
+    }
+
+
+    @Test
+    @DisplayName("Get All Capacities - Sorted By Technologies Size ASC: Should return all capacities sorted by technologies size ASC")
+    void testGetAllCapacitiesSortedByTechnologiesSizeASC() {
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "technologies.size");
+
+        Set<TechnologyEntity> technologies = Set.of(
+                new TechnologyEntity(1L, "Java", "Java for beginners"),
+                new TechnologyEntity(2L, "Python", "Python for beginners"),
+                new TechnologyEntity(3L, "JavaScript", "JavaScript basics")
+        );
+
+        List<CapacityEntity> mockEntities = Arrays.asList(
+                new CapacityEntity(1L, "Capacity A", "Description A", technologies),
+                new CapacityEntity(2L, "Capacity B", "Description B", technologies)
+        );
+        Page<CapacityEntity> mockPage = new PageImpl<>(mockEntities);
+
+        Sort.Direction direction = Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "technologies.size"));
+        when(capacityRepository.findAllOrderedByTechnologiesCountAsc(pageable)).thenReturn(mockPage);
+
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Capacity A", "Description A", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Capacity B", "Description B", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L)))
+        );
+        when(capacityEntityMapper.toModelList(mockPage.getContent())).thenReturn(mockCapacities);
+
+        CustomPage<Capacity> result = capacityAdapter.getAllCapacities(criteria);
+
+        verify(capacityRepository, times(1)).findAllOrderedByTechnologiesCountAsc(pageable);
+        verify(capacityEntityMapper, times(1)).toModelList(mockPage.getContent());
+
+        assertEquals(mockPage.getNumber(), result.getPageNumber());
+        assertEquals(mockPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockPage.getTotalPages(), result.getTotalPages());
+        assertEquals(criteria.getSize(), result.getPageSize());
+        assertEquals(mockCapacities, result.getContent());
+    }
+
+
+    @Test
+    @DisplayName("Get All Capacities - Sorted By Technologies Size DESC: Should return all capacities sorted by technologies size DESC")
+    void testGetAllCapacitiesSortedByTechnologiesSizeDESC() {
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.DESC, "technologies.size");
+
+        Set<TechnologyEntity> technologies = Set.of(
+                new TechnologyEntity(1L, "Java", "Java for beginners"),
+                new TechnologyEntity(2L, "Python", "Python for beginners"),
+                new TechnologyEntity(3L, "JavaScript", "JavaScript basics")
+        );
+
+        List<CapacityEntity> mockEntities = Arrays.asList(
+                new CapacityEntity(1L, "Capacity A", "Description A", technologies),
+                new CapacityEntity(2L, "Capacity B", "Description B", technologies)
+        );
+        Page<CapacityEntity> mockPage = new PageImpl<>(mockEntities);
+
+        Sort.Direction direction = Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(direction, "technologies.size"));
+        when(capacityRepository.findAllOrderedByTechnologiesCountDesc(pageable)).thenReturn(mockPage);
+
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Capacity A", "Description A", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Capacity B", "Description B", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L)))
+        );
+        when(capacityEntityMapper.toModelList(mockPage.getContent())).thenReturn(mockCapacities);
+
+        CustomPage<Capacity> result = capacityAdapter.getAllCapacities(criteria);
+
+        verify(capacityRepository, times(1)).findAllOrderedByTechnologiesCountDesc(pageable);
+        verify(capacityEntityMapper, times(1)).toModelList(mockPage.getContent());
+
+        assertEquals(mockPage.getNumber(), result.getPageNumber());
+        assertEquals(mockPage.getTotalElements(), result.getTotalElements());
+        assertEquals(mockPage.getTotalPages(), result.getTotalPages());
+        assertEquals(criteria.getSize(), result.getPageSize());
+        assertEquals(mockCapacities, result.getContent());
+    }
+
+
+    @Test
+    @DisplayName("Get Total Body Capacities - Success: Should retrieve all capacities")
+    void testGetTotalBodyCapacities_Success() {
+        List<Capacity> mockCapacities = Arrays.asList(
+                new Capacity(1L, "Java", "Programming language", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L))),
+                new Capacity(2L, "Python", "Programming language", Arrays.asList(new Technology(1L), new Technology(2L), new Technology(3L)))
+        );
+
+        Set<TechnologyEntity> technologies = Set.of(
+                new TechnologyEntity(1L, "Java", "Java for beginners"),
+                new TechnologyEntity(2L, "Python", "Python for beginners"),
+                new TechnologyEntity(3L, "JavaScript", "JavaScript basics")
+        );
+
+        when(capacityRepository.findAll()).thenReturn(Arrays.asList(
+                new CapacityEntity(1L, "Java", "Programming language", technologies),
+                new CapacityEntity(2L, "Python", "Programming language", technologies)
+        ));
+
+        when(capacityEntityMapper.toModelList(anyList())).thenReturn(mockCapacities);
+
+        List<Capacity> result = capacityAdapter.getTotalBodyCapacities();
+
+        assertEquals(mockCapacities, result);
+
+        verify(capacityRepository, times(1)).findAll();
+        verify(capacityEntityMapper, times(1)).toModelList(anyList());
     }
 
     @Test
-    @DisplayName("When_GetAllCapacities_OrderByNameDescending_Expect_SuccessfulResult")
-    void shouldOrderCapacitiesByNameDescending() {
-        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
+    @DisplayName("Get Total Body Capacities - No Data Found: Should throw exception when no data is found")
+    void testGetTotalBodyCapacitiesEmptyList_NoDataFound() {
+        when(capacityRepository.findAll()).thenReturn(Arrays.asList());
 
-        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
+        when(capacityEntityMapper.toModelList(anyList())).thenReturn(Arrays.asList());
 
-        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, true, false);
+        assertThrows(NoDataFoundException.class, () -> capacityAdapter.getTotalBodyCapacities());
 
-        List<Capacity> expected = mockedCapacityEntities.stream()
-                .map(capacityEntityMapper::toModel)
-                .sorted(Comparator.comparing(Capacity::getName).reversed())
-                .collect(Collectors.toList());
+        verify(capacityRepository, times(1)).findAll();
 
-        assertEquals(expected, result);
+        verify(capacityEntityMapper, never()).toModelList(anyList());
     }
-
-    @Test
-    @DisplayName("When_GetAllCapacities_OrderByTechnologiesSizeAscending_Expect_SuccessfulResult")
-    void shouldOrderCapacitiesByTechnologiesSizeAscending() {
-        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
-
-        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
-
-        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, false, true);
-
-        List<Capacity> expected = mockedCapacityEntities.stream()
-                .map(capacityEntityMapper::toModel)
-                .sorted(Comparator.comparingInt(capacity -> capacity.getTechnologies().size()))
-                .collect(Collectors.toList());
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    @DisplayName("When_GetAllCapacities_OrderByTechnologiesSizeDescending_Expect_SuccessfulResult")
-    void shouldOrderCapacitiesByTechnologiesSizeDescending()  {
-        List<CapacityEntity> mockedCapacityEntities = new ArrayList<>();
-
-        when(capacityRepository.findAll()).thenReturn(mockedCapacityEntities);
-
-        List<Capacity> result = capacityAdapter.getAllCapacities(0, 10, false, false);
-
-        List<Capacity> expected = mockedCapacityEntities.stream()
-                .map(capacityEntityMapper::toModel)
-                .sorted((c1, c2) -> Integer.compare(c2.getTechnologies().size(), c1.getTechnologies().size()))
-                .collect(Collectors.toList());
-
-        assertEquals(expected, result);
-    }
-
 }

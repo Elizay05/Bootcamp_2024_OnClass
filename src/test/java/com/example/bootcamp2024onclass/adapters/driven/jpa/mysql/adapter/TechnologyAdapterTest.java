@@ -5,21 +5,24 @@ import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.NoDat
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.exception.TechnologyAlreadyExistsException;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.mapper.ITechnologyEntityMapper;
 import com.example.bootcamp2024onclass.adapters.driven.jpa.mysql.repository.ITechnologyRepository;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.Technology;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -68,51 +71,75 @@ class TechnologyAdapterTest {
         verify(technologyRepository, never()).save(any());
     }
 
-  
     @Test
-    @DisplayName("When_GetAllTechnologies_Expect_SuccessfulResult")
+    @DisplayName("Get All Technologies - Success: Should retrieve all technologies")
     void testGetAllTechnologies_Success() {
-        Integer page = 0;
-        Integer size = 10;
-        boolean isAscending = true;
-        List<TechnologyEntity> technologyEntities = new ArrayList<>();
-        technologyEntities.add(new TechnologyEntity(1L, "Java", "Programming language"));
-        technologyEntities.add(new TechnologyEntity(2L, "Python", "Programming language"));
-        Page<TechnologyEntity> pageResult = new PageImpl<>(technologyEntities);
 
-        when(technologyRepository.findAll(any(Pageable.class))).thenReturn(pageResult);
-        when(technologyEntityMapper.toModelList(technologyEntities)).thenReturn(Arrays.asList(
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
+        List<Technology> mockTechnologies = Arrays.asList(
                 new Technology(1L, "Java", "Programming language"),
                 new Technology(2L, "Python", "Programming language")
-        ));
+        );
+        CustomPage<Technology> mockCustomPage = new CustomPage<>(mockTechnologies, 0, 10, 2, 1);
 
-        List<Technology> result = technologyAdapter.getAllTechnologies(page, size, isAscending);
+        when(technologyRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Arrays.asList( new TechnologyEntity())));
+        when(technologyEntityMapper.toModelList(anyList())).thenReturn(mockTechnologies);
 
-        assertEquals(2, result.size());
-        assertEquals("Java", result.get(0).getName());
-        assertEquals("Python", result.get(1).getName());
+
+        CustomPage<Technology> result = technologyAdapter.getAllTechnologies(criteria);
+
         verify(technologyRepository, times(1)).findAll(any(Pageable.class));
-        verify(technologyEntityMapper, times(1)).toModelList(technologyEntities);
+        assertNotNull(result);
     }
 
     @Test
-    @DisplayName("When_GetAllTechnologies_NoDataFound_Expect_FailedResult")
+    @DisplayName("Get All Technologies - No Data Found: Should throw exception when no data is found")
     void testGetAllTechnologies_NoDataFound() {
-        Integer page = 0;
-        Integer size = 10;
-        boolean isAscending = true;
-        List<TechnologyEntity> technologyEntities = new ArrayList<>();
-        Page<TechnologyEntity> pageResult = new PageImpl<>(technologyEntities);
+        PaginationCriteria criteria = new PaginationCriteria(0, 10, SortDirection.ASC, "name");
 
-        when(technologyRepository.findAll(any(Pageable.class))).thenReturn(pageResult);
+        when(technologyRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         assertThrows(NoDataFoundException.class, () -> {
-            technologyAdapter.getAllTechnologies(page, size, isAscending);
+            technologyAdapter.getAllTechnologies(criteria);
         });
 
         verify(technologyRepository, times(1)).findAll(any(Pageable.class));
-        verify(technologyEntityMapper, never()).toModelList(any());
     }
 
+    @Test
+    @DisplayName("Get Total Body Technologies - Success: Should retrieve all technologies")
+    void testGetTotalBodyTechnologies_Success() {
+        List<Technology> mockTechnologies = Arrays.asList(
+                new Technology(1L, "Java", "Programming language"),
+                new Technology(2L, "Python", "Programming language")
+        );
 
+        when(technologyRepository.findAll()).thenReturn(Arrays.asList(
+                new TechnologyEntity(1L, "Java", "Programming language"),
+                new TechnologyEntity(2L, "Python", "Programming language")
+        ));
+
+        when(technologyEntityMapper.toModelList(anyList())).thenReturn(mockTechnologies);
+
+        List<Technology> result = technologyAdapter.getTotalBodyTechnologies();
+
+        assertEquals(mockTechnologies, result);
+
+        verify(technologyRepository, times(1)).findAll();
+        verify(technologyEntityMapper, times(1)).toModelList(anyList());
+    }
+
+    @Test
+    @DisplayName("Get Total Body Technologies - No Data Found: Should throw exception when no data is found")
+    void testGetTotalBodyTechnologiesEmptyList_NoDataFound() {
+        when(technologyRepository.findAll()).thenReturn(Arrays.asList());
+
+        when(technologyEntityMapper.toModelList(anyList())).thenReturn(Arrays.asList());
+
+        assertThrows(NoDataFoundException.class, () -> technologyAdapter.getTotalBodyTechnologies());
+
+        verify(technologyRepository, times(1)).findAll();
+
+        verify(technologyEntityMapper, never()).toModelList(anyList());
+    }
 }

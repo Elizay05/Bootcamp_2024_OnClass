@@ -6,6 +6,9 @@ import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampReq
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IBootcampResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.IBootcampServicePort;
 import com.example.bootcamp2024onclass.domain.model.Bootcamp;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,11 +21,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/bootcamp")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class BootcampRestControllerAdapter {
 
     private final IBootcampServicePort bootcampServicePort;
@@ -54,14 +57,19 @@ public class BootcampRestControllerAdapter {
                             schema = @Schema(implementation = BootcampResponse.class))  }),
             @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
     })
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @GetMapping("/")
-    public ResponseEntity<List<BootcampResponse>> getAllBootcamps(
+    public ResponseEntity<CustomPage<BootcampResponse>> getAllBootcamps(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "true") boolean isOrderByName,
             @RequestParam(required = false, defaultValue = "true") boolean isAscending){
-        return ResponseEntity.ok(bootcampResponseMapper.toBootcampResponseList(
-                bootcampServicePort.getAllBootcamps(page, size, isOrderByName, isAscending)
-        ));
+        PaginationCriteria criteria = new PaginationCriteria(page, size, isAscending ? SortDirection.ASC : SortDirection.DESC, isOrderByName ? "name" : "id");
+        CustomPage<Bootcamp> bootcamps = bootcampServicePort.getAllBootcamps(criteria);
+        CustomPage<BootcampResponse> responses = new CustomPage<>(
+                bootcamps.getContent().stream().map(bootcampResponseMapper::toBootcampResponse).toList(),
+                bootcamps.getPageNumber(), bootcamps.getPageSize(), bootcamps.getTotalElements(), bootcamps.getTotalPages()
+        );
+        return ResponseEntity.ok(responses);
     }
 }

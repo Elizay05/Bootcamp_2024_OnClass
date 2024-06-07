@@ -76,6 +76,5 @@ public class BeanConfiguration {
         return new VersionBootcampUseCase(versionBootcampPersistencePort());
     }
 
-
 }
 

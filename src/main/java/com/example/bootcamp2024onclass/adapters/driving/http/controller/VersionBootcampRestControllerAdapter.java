@@ -6,7 +6,10 @@ import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddVers
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IVersionBootcampRequestMapper;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.IVersionBootcampResponseMapper;
 import com.example.bootcamp2024onclass.domain.api.IVersionBootcampServicePort;
+import com.example.bootcamp2024onclass.domain.model.CustomPage;
+import com.example.bootcamp2024onclass.domain.model.PaginationCriteria;
 import com.example.bootcamp2024onclass.domain.model.VersionBootcamp;
+import com.example.bootcamp2024onclass.domain.util.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,11 +22,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/versionBootcamp")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class VersionBootcampRestControllerAdapter {
     private final IVersionBootcampServicePort versionBootcampServicePort;
     private final IVersionBootcampRequestMapper versionBootcampRequestMapper;
@@ -56,16 +59,19 @@ public class VersionBootcampRestControllerAdapter {
     })
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('TUTOR')")
     @GetMapping("/")
-    public ResponseEntity<List<VersionBootcampResponse>> getAllVersionBootcamps(
+    public ResponseEntity<CustomPage<VersionBootcampResponse>> getAllVersionBootcamps(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String isOrderBy,
+            @RequestParam(required = false, defaultValue = "true") boolean isOrderByStartDate,
             @RequestParam(required = false, defaultValue = "true") boolean isAscending,
-            @RequestParam(required = false) String bootcampName)
-    {
-        return ResponseEntity.ok(versionBootcampResponseMapper.toVersionBootcampResponseList(
-                versionBootcampServicePort.getAllVersionBootcamps(page, size, isOrderBy, isAscending, bootcampName)
-        ));
-    }
+            @RequestParam(required = false) String bootcampName) {
 
+        PaginationCriteria criteria = new PaginationCriteria(page, size, isAscending ? SortDirection.ASC : SortDirection.DESC, isOrderByStartDate ? "startDate" : "maximumQuota");
+        CustomPage<VersionBootcamp> versionBootcamps = versionBootcampServicePort.getAllVersionBootcamps(criteria, bootcampName);
+        CustomPage<VersionBootcampResponse> responses = new CustomPage<>(
+                versionBootcamps.getContent().stream().map(versionBootcampResponseMapper::toVersionBootcampResponse).toList(),
+                versionBootcamps.getPageNumber(), versionBootcamps.getPageSize(), versionBootcamps.getTotalElements(), versionBootcamps.getTotalPages()
+        );
+        return ResponseEntity.ok(responses);
+    }
 }
