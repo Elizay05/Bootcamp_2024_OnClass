@@ -74,6 +74,13 @@ public class CapacityRestControllerAdapter {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "Get Total Capacities")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Correct get Capacities",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CapacityResponse.class))  }),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
+    })
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @GetMapping("/total_body")
     public ResponseEntity<List<CapacityResponse>> getTotalBodyCapacities(){

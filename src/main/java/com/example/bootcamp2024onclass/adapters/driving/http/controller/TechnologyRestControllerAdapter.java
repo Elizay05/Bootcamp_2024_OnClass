@@ -1,6 +1,7 @@
 package com.example.bootcamp2024onclass.adapters.driving.http.controller;
 
 
+import com.example.bootcamp2024onclass.adapters.driving.http.dto.reponse.CapacityResponse;
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.reponse.TechnologyResponse;
 import com.example.bootcamp2024onclass.adapters.driving.http.dto.request.AddTechnologyRequest;
 import com.example.bootcamp2024onclass.adapters.driving.http.mapper.ITechnologyRequestMapper;
@@ -73,6 +74,13 @@ public class TechnologyRestControllerAdapter {
         return ResponseEntity.ok(responses);
     }
 
+    @Operation(summary = "Get Total Technologies")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Correct get Capacities",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CapacityResponse.class))  }),
+            @ApiResponse(responseCode = "401", ref = "#/components/responses/UnauthorizedError")
+    })
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     @GetMapping("/total_body")
     public ResponseEntity<List<TechnologyResponse>> getTotalBodyTechnologies(){
